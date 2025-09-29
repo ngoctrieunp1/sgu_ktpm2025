@@ -1,0 +1,110 @@
+.Admin-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4%;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .logos {
+    width: max(10%, 80px);
+}
+.Appbar{
+    color:white;
+    width:1200px;
+}
+.navbar .profiles {
+    width: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.navbar-dropdown1 {
+    position: absolute;
+    display: none;
+    top: 60px; /* Adjust for the dropdown position */
+    right: 0;
+    z-index: 1;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.propic:hover .navbar-dropdown1 {
+    display: flex;
+    flex-direction: column; /* Change to column for better stacking */
+    gap: 10px;
+    list-style: none;
+    background-color: #fff;
+}
+
+.navbar-dropdown1 li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-dropdown1 li:hover {
+    background-color: #f1f1f1;
+}
+
+/* Responsive Media Queries */
+
+/* Tablet view */
+@media (max-width: 768px) {
+    .Admin-navbar {
+        padding: 8px 2%;
+    }
+
+    .navbar .logos {
+        width: 60px; /* Slightly reduce logo size */
+    }
+
+    .navbar .profiles {
+        width: 35px; /* Reduce profile image size */
+    }
+
+    .navbar-dropdown1 {
+        top: 50px; /* Adjust position for smaller screens */
+        right: 5px;
+        width: 150px; /* Limit dropdown width */
+    }
+
+    .navbar-dropdown1 li {
+        font-size: 14px;
+    }
+}
+
+/* Mobile view */
+@media (max-width: 480px) {
+    .Admin-navbar {
+        flex-direction: column; /* Stack elements vertically */
+        align-items: flex-start;
+        padding: 8px 5%;
+    }
+
+    .navbar .logos {
+        width: 50px; /* Further reduce logo size */
+    }
+
+    .navbar .profiles {
+        width: 30px; /* Further reduce profile image size */
+    }
+
+    .navbar-dropdown1 {
+        top: 40px;
+        right: 5px;
+        width: 100px; /* Further limit dropdown width */
+    }
+
+    .navbar-dropdown1 li {
+        font-size: 12px; /* Reduce font size */
+    }
+}

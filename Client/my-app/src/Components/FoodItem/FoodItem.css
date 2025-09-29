@@ -1,0 +1,219 @@
+/* General Styles */
+.food-disp {
+    margin-top: 30px;
+    padding: 0 15px; /* Add some padding for smaller screens */
+}
+
+.food-disp h2 {
+    font-weight: 600;
+    font-size: 30px;
+}
+
+.food-disp-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    margin-top: 30px;
+    gap: 30px;
+    row-gap: 50px;
+}
+
+/* Food Item */
+.food-item {
+    width: 100%;
+    height: 400px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px #00000015;
+    transition: 0.3s;
+    animation: fadeIn 1s;
+}
+
+.food-item-img {
+    width: 100%;
+    height: 180px;
+    border-radius: 15px 15px 0px 0px;
+}
+
+.food-item-info {
+    padding: 20px;
+}
+
+.food-item-name-rating {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.food-item-name-rating p {
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+
+.food-item-name-rating img {
+    width: 10px;
+    cursor: pointer;
+}
+
+.food-item-descrip {
+    font-size: 12px;
+    color: #676767;
+    height: 70px;
+    overflow-y: auto;  /* Enable vertical scrolling */
+    padding-right: 10px; /* Add padding for better readability */
+}
+
+.review-itemmm {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    height: 50px;
+    width: 100%; /* Make it fill the container on smaller screens */
+}
+
+.food-item-price {
+    color: tomato;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 10px 0px;
+}
+
+.food-item-container {
+    position: relative;
+}
+
+.food-item-container .carttt {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: tomato;
+    cursor: pointer;
+    padding: 8px 10px;
+    color: white;
+    font-size: 10px;
+    border: none;
+    border-radius: 4px;
+}
+
+.foot-cart {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 12px;
+    padding-right: 10px;
+    width: 110px;
+    height: 40px;
+    border-radius: 50px;
+    background-color: white;
+}
+
+.foot-cart img {
+    width: 30px;
+}
+
+.foot-cart p {
+    font-weight: 500;
+    padding-top: 12px;
+}
+
+/* Rating Section */
+.rating {
+    border-bottom: 1px solid #ddd;
+}
+
+.add-rating {
+    display: flex;
+    gap: 10px;
+}
+
+.add-rating input {
+    display: block;
+    width: 50%;
+    height: 30px;
+}
+
+.add-rating textarea {
+    width: 100%;
+    height: 40px;
+}
+
+.add-rating button {
+    cursor: pointer;
+    width: 50%;
+    height: 30px;
+    border-radius: 5px;
+}
+
+/* Media Queries */
+
+/* For tablets */
+@media (max-width: 768px) {
+    .food-disp h2 {
+        font-size: 24px;
+    }
+
+    .food-disp-list {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .food-item {
+        height: 350px;
+    }
+
+    .food-item-img {
+        height: 160px;
+    }
+
+    .food-item-price {
+        font-size: 20px;
+    }
+}
+
+/* For mobile devices */
+@media (max-width: 480px) {
+    .food-disp h2 {
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .food-disp-list {
+        grid-template-columns: 1fr; /* One column layout */
+        gap: 20px;
+    }
+
+    .food-item {
+        height: auto; /* Adjust height for smaller screens */
+    }
+
+    .food-item-img {
+        height: 140px;
+    }
+
+    .food-item-name-rating p {
+        font-size: 16px;
+    }
+
+    .food-item-price {
+        font-size: 18px;
+    }
+
+    .foot-cart {
+        width: 100px;
+        height: 35px;
+    }
+
+    .foot-cart img {
+        width: 25px;
+    }
+
+    .foot-cart p {
+        font-size: 12px;
+    }
+}

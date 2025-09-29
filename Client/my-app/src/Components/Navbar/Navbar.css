@@ -1,0 +1,102 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0px;
+    background-color: #fff;
+    z-index: 1000px;
+  }
+  
+  .logo {
+    height: 80px;
+    width: auto;
+  }
+  
+  .hamburger {
+    display: none;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1100;
+  }
+  
+  .nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 20px;
+  }
+  
+  .nav-menu li {
+    cursor: pointer;
+
+  }
+  
+  .nav-menu .active {
+    font-weight: bold;
+  }
+  
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .propic {
+    position: relative;
+  }
+  
+  .navbar-dropdown1 {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+  }
+  
+  .propic:hover .navbar-dropdown1 {
+    display: block;
+  }
+  
+  @media (max-width: 1130px) {
+    .nav-menu {
+      position: fixed;
+    top: 100px;
+    left: -100%; 
+    width: 300px;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #f1f3f6;
+    transition: left 0.3s ease;
+    height: 100vh;
+    padding-top: 30px;
+    z-index: 1000;
+    border-radius: 15px;
+    }
+  
+    .nav-menu-active {
+      height: 100vh; 
+      left: 0;
+     box-shadow: 9px 0px 16px 0px rgba(0, 0, 0, 0.75);
+    /* Make the menu cover the full screen height */
+    }
+    .nav-menu li img{
+        width: 24px;
+        height: auto;
+    }
+    .hamburger {
+      display: block;
+      flex-wrap: wrap;
+      margin-left: 20px;
+      margin-bottom: 10px;
+    }
+/*   
+    .navbar-right {
+      flex-direction: column;
+      align-items: center;
+    } */
+    .propic img{
+        width: 30px;
+    
+    }
+  }

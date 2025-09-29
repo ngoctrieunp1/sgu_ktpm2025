@@ -1,0 +1,103 @@
+
+.add1{
+    width: 100%;
+    margin-top: 30px;
+    padding: 30px 50px;
+    color: #6d6d6d;
+    font-size: 16px;
+    background-color: rgb(121,198,213);
+    box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }.review-disp{
+    margin-top: 30px;
+}
+.review-disp h2{
+    font-weight: 600;
+    font-size: 30px;
+    color: white;
+}
+.review-disp-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+    margin-top: 30px;
+    gap: 30px;
+    row-gap: 50px;
+}
+.flex1{
+    display: flex;
+}
+.review-item{
+    width: 100%;
+    height: 350px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 10px #00000015;
+    
+    
+  
+}
+.review-item-img{
+    width: 100%;
+    height: 170px;
+    border-radius: 15px 15px 0px 0px;
+}
+.review-item-info{
+    padding: 20px;
+}
+.review-item-name-rating{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.review-item-name-rating p{
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+.review-item-name-rating img{
+    width: 10px;
+    cursor: pointer;
+    
+    
+}
+.food-item-descripp{
+    font-size: 12px;
+    color: #676767;
+    height: 70px;
+    overflow-y: auto;  /* Enable vertical scrolling */
+    padding-right: 10px; /* Add padding for better readability */
+}
+.review-itemmmm{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  height: 50px;
+  
+}
+
+
+@media (max-width: 768px) {
+    
+
+    
+}
+
+@media (max-width: 480px) {
+    
+    .food-item-descripp {
+        font-size: 10px;
+        
+    }
+    .review-itemmmm{
+        
+        padding: 10px;
+       
+        height: 70px;
+        
+      }
+}
+
+

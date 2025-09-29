@@ -1,0 +1,165 @@
+.header{
+    height: 35vw;
+    border-radius: 20px;
+    margin: 30px auto;
+    
+    
+    background-size: contain;
+    position: relative;
+}
+.header-content{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    max-width: 50%;
+    bottom: 4%;
+    left: 6vw;
+    animation: fadeIn 3s;
+}
+.header h2{
+    font-size: 50px;
+    color: white;
+    font-weight: 600;
+}
+.header p{
+    color: white;
+    font-size: 15px;
+}
+
+.header-content button{
+    background-color: white;
+    color: #747474;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 500;
+}
+@media (max-width: 900px) {
+    .header {
+        height: 35vw; 
+    }
+
+    .header-content {
+        max-width: 60%;
+        left: 3vw;
+    }
+
+    .header h2 {
+        font-size: 4vw; 
+    }
+
+    .header p {
+        font-size: 1.5vw; 
+    }
+
+    .header-content button {
+        padding: 4px 13px; 
+        font-size: 2.5vw; 
+    }
+}
+.container{
+    width: 80%;
+    margin: 0 auto;
+    padding: 1%;
+}
+.food-search{
+    background-image: url(./bg.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 7% 0;
+    height: 35vw;
+    border-radius: 20px;
+}
+
+.food-search input[type="search"] {
+    width: 50%;
+    padding: 1%;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    margin-top: 120px;
+}
+
+.food-search input[type="submit"] {
+    background-color: tomato;
+    cursor: pointer;
+    padding: 10px 20px;
+    color: white;
+    font-size: 15px;
+    border: none;
+    border-radius: 4px;
+    transition: 0.3s;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+
+
+@media (max-width: 768px) {
+    .header {
+        height: 60vw; 
+    }
+
+    .header-content {
+        display: none;
+    }
+
+    .header h2 {
+        font-size: 5vw; 
+    }
+
+    .header p {
+        font-size: 2.5vw; 
+    }
+
+    .header-content button {
+        padding: 5px 12px; 
+        font-size: 2.5vw; 
+    }
+    .food-search input[type="search"] {
+        width: 50%;
+        font-size: 1.2rem;
+        margin-top: 80px;
+        margin-left: 30px;
+        padding: 3px 12px; 
+    }
+
+    .food-search input[type="submit"] {
+        padding: 8px 18px;
+        font-size: 14px;
+        margin-left: 8px;
+    }
+}
+
+/* For screens up to 480px */
+@media (max-width: 480px) {
+    .header {
+        height: 30vw; 
+    }
+
+    .header-content {
+       display: none;
+    }
+
+    .header h2 {
+        font-size: 6vw; 
+    }
+
+    
+    .food-search input[type="search"] {
+        width: 50%;
+        height: 30px;
+        font-size: 1rem;
+        
+       
+      
+    }
+
+    .food-search input[type="submit"] {
+        padding: 6px 15px;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+}

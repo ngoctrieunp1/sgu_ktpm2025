@@ -1,0 +1,45 @@
+
+.add1 {
+  width: 100%;
+  margin-top: 30px;
+  padding: 30px 50px;
+  color: #6d6d6d;
+  font-size: 16px;
+  background-color: rgb(121, 198, 213);
+  box-shadow: 4px 4px 4px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: padding 0.3s ease, font-size 0.3s ease;
+}
+
+.add1 p {
+  font-weight: 600;
+  color: black;
+}
+
+.list-table-format p {
+  color: white;
+}
+
+/* Media query for tablets and smaller screens */
+@media (max-width: 768px) {
+  .add1 {
+      padding: 20px 30px;
+      font-size: 14px;
+  }
+}
+
+/* Media query for mobile devices */
+@media (max-width: 480px) {
+  .add1 {
+      padding: 15px 20px;
+      font-size: 12px;
+  }
+
+  .add1 p {
+      font-size: 14px;
+  }
+  
+  .list-table-format p {
+      font-size: 12px;
+  }
+}

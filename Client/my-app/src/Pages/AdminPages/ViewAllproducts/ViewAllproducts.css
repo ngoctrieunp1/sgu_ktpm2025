@@ -1,0 +1,95 @@
+.list-table-format {
+    display: grid;
+    grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    border: 1px solid #dedede;  /* Softer border color */
+    font-size: 14px;
+    color: #333; /* Dark gray for text */
+    background-color: #f9f9f9; /* Light gray for background */
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.list-table .title {
+    color: #1a1a1a; /* Darker text for titles */
+    font-weight: 700; /* Bold for emphasis */
+}
+
+.add1 {
+    width: 100%;
+    margin-top: 30px;
+    padding: 30px 50px;
+    background-color: #e8f1f5; /* Soft light blue */
+    color: #333; /* Dark gray for text */
+    font-size: 16px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+    border-radius: 10px;
+    border: 1px solid #d0d0d0; /* Softer border */
+   
+}
+
+.add1 p {
+    font-weight: 600;
+    color: #1a1a1a; /* Darker gray for paragraph text */
+}
+
+.list-table-format img {
+    width: 50px;
+    border-radius: 5px; /* Rounded corners for images */
+}
+
+.list-table-format p {
+    color: #555; /* Slightly darker gray for paragraph text */
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+/* Hover effects for interactive elements */
+.list-table-format:hover {
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15); /* Enhance shadow on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Media query for small screens (max-width: 600px) */
+@media (max-width: 600px) {
+    .list-table-format {
+        grid-template-columns: 1fr 3fr 1fr;
+        gap: 15px;
+        padding: 10px 15px; /* Reduced padding for smaller screens */
+    }
+
+    .list-table .title {
+        display: none; /* Hide title on smaller screens */
+    }
+
+    .list-table-format img {
+        width: 40px; /* Adjust image size for smaller screens */
+    }
+
+    .add1 {
+        padding: 20px 30px; /* Reduce padding for smaller screens */
+        font-size: 14px;     /* Adjust font size for readability */
+    }
+}
+
+/* Media query for extra small screens (max-width: 400px) */
+@media (max-width: 400px) {
+    .list-table-format {
+        grid-template-columns: 1fr 1fr; /* Simplify the grid for smaller screens */
+        gap: 10px;
+    }
+
+    .list-table-format img {
+        width: 30px; /* Further reduce image size */
+    }
+
+    .add1 {
+        padding: 15px 20px;
+        font-size: 12px; /* Smaller font size */
+    }
+}

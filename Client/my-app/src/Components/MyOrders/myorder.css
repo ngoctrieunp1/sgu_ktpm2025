@@ -1,0 +1,159 @@
+.my-orders-container {
+  margin: 50px auto;
+  max-width: 1200px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f0f8ff, #e6e6e6); /* Light gradient background */
+  border-radius: 10px;
+}
+
+.order-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.order-icon {
+  height: 60px;
+  width: 60px; /* Adjusted width for consistency */
+}
+
+.order-header h2 {
+  font-size: 24px; /* Adjusted to be slightly smaller */
+  color: #333;
+  font-weight: 600; /* Stronger emphasis */
+  margin: 0;
+}
+
+.order-details {
+  font-size: 16px; /* Adjusted for a more balanced look */
+  color: #555; /* Slightly darker grey for better readability */
+}
+
+.order-products {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.order-products li {
+  margin-bottom: 8px; /* Slightly reduced margin for a tighter look */
+  font-size: 16px; /* Consistent with order details */
+  color: #333; /* Darker color for better contrast */
+}
+
+.total-price {
+  font-size: 18px; /* Slightly reduced for consistency */
+  color: #e74c3c;
+  font-weight: 500; /* Medium weight for emphasis */
+}
+
+.order-address {
+  margin: 10px 0;
+  font-size: 16px; /* Consistent with order details */
+  color: #333; /* Consistent with other text elements */
+}
+
+.order-status {
+  font-size: 16px; /* Consistent with other text elements */
+  color: #333; /* Consistent with other text elements */
+  font-weight: 600; /* Emphasis on status */
+  margin: 10px 0;
+}
+
+.track-order-btn {
+  padding: 12px 20px;
+  background-color: #27ae60;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px; /* Balanced for readability */
+  font-weight: 500; /* Medium weight for the button text */
+  transition: background-color 0.3s ease;
+}
+.cancel-order-btn{
+  padding: 12px 20px;
+  background-color: #27ae60;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px; /* Balanced for readability */
+  font-weight: 500; /* Medium weight for the button text */
+  transition: background-color 0.3s ease;
+  margin-left: 30px;
+}
+.track-order-btn:hover {
+  background-color: #219150;
+}
+
+@media (max-width: 1200px) {
+  .order-header h2 {
+      font-size: 22px; /* Slightly smaller font size for medium screens */
+  }
+
+  .order-icon {
+      height: 50px;
+      width: 50px; /* Adjusted width for consistency */
+  }
+
+  .track-order-btn {
+      font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .order-card {
+      padding: 15px;
+  }
+
+  .order-header {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  .order-icon {
+      height: 40px;
+      width: 40px; /* Adjusted width for consistency */
+  }
+
+  .track-order-btn {
+      width: 100%;
+      padding: 10px 0;
+      font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-header h2 {
+      font-size: 20px; /* Smaller font size for small screens */
+  }
+
+  .order-icon {
+      height: 35px;
+      width: 35px; /* Adjusted width for consistency */
+  }
+
+  .track-order-btn {
+      padding: 8px 0;
+      font-size: 12px;
+  }
+  .cancel-order-btn{
+    padding: 8px 0;
+    font-size: 12px;
+    width: 150px;
+    margin-top: 10px;
+    margin-left: 60px;
+  }
+}

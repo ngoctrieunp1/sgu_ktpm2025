@@ -1,0 +1,100 @@
+.navbar{
+    padding: 30px 0px;
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0px 0px 10px #00000015;
+    border-radius: 15px;
+    margin-top: 30px;
+}
+.logo{
+    height: 70px;
+   width: 250px;
+   margin-left: 30px;
+  
+}
+.nav-menu{
+    display: flex;
+    gap: 20px;
+    list-style: none;
+    font-size: 18px;
+    color: #49557e;
+    cursor: pointer;
+    margin-top: 20px;
+   
+}
+.navbar-right{
+    display: flex;
+    gap: 40px;
+    align-items: center;
+
+}
+.navbar button{
+    background-color: transparent;
+    cursor: pointer;
+    padding: 10px 20px;
+    color: white;
+    background-color: tomato;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    transition: 0.3s;
+    margin-right: 20px;
+
+}
+
+.navbar button:hover{
+    background-color: tomato;
+}
+
+.nav-menu .active{
+    
+    
+    border-bottom:2px solid #4949557e ;
+    padding: 5px 10px;
+    border-radius:50px;
+}
+
+.nav-search-icon{
+    position: relative;
+}
+.nav-search-icon .dot{
+    position: absolute;
+    min-width: 10px;
+    min-height: 10px;
+    background-color: tomato;
+    border-radius: 5px;
+    top: -8px;
+    right: -8px;
+}
+.propic{
+    position: relative;
+    cursor: pointer;
+    margin-right: 20px;
+    }
+    .navbar-dropdown1{
+    position: absolute;
+    display: none;
+    right:30;
+    z-index: 1;
+    /* margin-top: 10px; */
+    font-weight: 500;
+    }
+    .propic:hover .navbar-dropdown1{
+        display: flex;
+        /* flex-direction: column; */
+        gap: 10px;
+        /* background-color: #fff2ef; */
+        padding: 15px 25px;
+        border-radius: 4px;
+        /* border: 1px solid tomato; */
+        list-style: none;
+    }
+    .navbar-dropdown1 li{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+    
