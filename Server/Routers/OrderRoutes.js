@@ -2,6 +2,7 @@ const {Router}=require("express")
 const OrderRoutes=Router()
 const OrderController=require("../Controllers/OrderController")
 OrderRoutes.post("/placeorder",OrderController. placeOrder)
+OrderRoutes.post("/placeorder-split", OrderController.placeOrderSplit);
 OrderRoutes.get("/Allorders",OrderController. Allorders)
 OrderRoutes.put("/cancelOrder/:id", OrderController.CancelOrder);
 OrderRoutes.get('/getOrdersByUser/:userId',OrderController. getOrdersByUser)

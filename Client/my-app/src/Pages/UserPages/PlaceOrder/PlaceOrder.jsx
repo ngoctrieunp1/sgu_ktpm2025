@@ -186,40 +186,129 @@ function PlaceOrder() {
     setformData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handlePayment = async (e) => {
-    e.preventDefault();
-    try {
-      const orderDetails = {
-        userId,
-        address: {
-          name: formData.name,
-          phoneNumber: formData.phoneNumber,
-          street: formData.street,
-          city: formData.city,
-          pincode: formData.pincode,
-        },
-        products: cartItems.map(item => ({
-          productId: item.itemId,
-          quantity: item.quantity,
-          price: item.price,
+  // const handlePayment = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const orderDetails = {
+  //       userId,
+  //       address: {
+  //         name: formData.name,
+  //         phoneNumber: formData.phoneNumber,
+  //         street: formData.street,
+  //         city: formData.city,
+  //         pincode: formData.pincode,
+  //       },
+  //       products: cartItems.map(item => ({
+  //         productId: item.itemId,
+  //         quantity: item.quantity,
+  //         price: item.price,
+  //       })),
+  //       // KHÔNG có phí ship:
+  //       totalAmount: getTotalPrice(),
+  //       status: 'Pending',
+  //     };
+
+  //     const response = await axios.post('http://localhost:4000/placeorder', orderDetails);
+  //     console.log('Order placed successfully:', response.data);
+  //     toast.success('Order placed successfully!');
+
+  //     await axios.delete(`http://localhost:4000/cart/clear/${userId}`);
+  //     setCartItems([]);
+  //     navigate('/myorder');
+  //   } catch (error) {
+  //     console.error('Error placing order:', error);
+  //     toast.error('Failed to place order');
+  //   }
+  // };
+
+//   const handlePayment = async (e) => {
+//   e.preventDefault();
+//   try {
+//     const orderDetails = {
+//       userId,
+//       address: {
+//         name: formData.name,
+//         phoneNumber: formData.phoneNumber,
+//         street: formData.street,
+//         city: formData.city,
+//         pincode: formData.pincode,
+//       },
+//       products: cartItems
+//         .filter(i => Number(i.quantity) > 0)
+//         .map(i => ({
+//           productId: i.itemId || i.productId || i._id, // <-- dùng đúng id sản phẩm
+//           quantity: Number(i.quantity),
+//         })),
+//     };
+
+//     // (tuỳ) Nếu BE yêu cầu auth:
+//     // const headers = { Authorization: `Bearer ${token}` };
+//     const resp = await axios.post("http://localhost:4000/placeorder-split", orderDetails /*, { headers }*/);
+
+//     // resp.data = { orders: [...] }
+//     const count = Array.isArray(resp.data?.orders) ? resp.data.orders.length : 1;
+//     toast.success(`Tạo ${count} đơn hàng thành công!`);
+
+//     await axios.delete(`http://localhost:4000/cart/clear/${userId}`);
+//     setCartItems([]);
+//     navigate("/myorder");
+//   } catch (error) {
+//     console.error("Error placing order:", error);
+//     const msg =
+//       error?.response?.data?.message ||
+//       error?.response?.data ||
+//       error?.message ||
+//       "Failed to place order";
+//     toast.error(String(msg));
+//   }
+// };
+
+const handlePayment = async (e) => {
+  e.preventDefault();
+  try {
+    const orderDetails = {
+      userId,
+      address: {
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        street: formData.street,
+        city: formData.city,
+        pincode: formData.pincode,
+      },
+      products: cartItems
+        .filter(i => Number(i.quantity) > 0)
+        .map(i => ({
+          productId: i.itemId || i.productId || i._id, 
+          quantity: Number(i.quantity),
         })),
-        // KHÔNG có phí ship:
-        totalAmount: getTotalPrice(),
-        status: 'Pending',
-      };
+    };
 
-      const response = await axios.post('http://localhost:4000/placeorder', orderDetails);
-      console.log('Order placed successfully:', response.data);
-      toast.success('Order placed successfully!');
+    // Gọi API backend
+    const resp = await axios.post("http://localhost:4000/placeorder-split", orderDetails);
 
-      await axios.delete(`http://localhost:4000/cart/clear/${userId}`);
-      setCartItems([]);
-      navigate('/myorder');
-    } catch (error) {
-      console.error('Error placing order:', error);
-      toast.error('Failed to place order');
-    }
-  };
+    // Nếu backend trả {orders: [...]}
+    const orders = resp.data?.orders || resp.data; // fallback nếu BE trả mảng
+    const count = Array.isArray(orders) ? orders.length : 1;
+
+    toast.success(`Tạo ${count} đơn hàng thành công!`);
+
+    // Xóa giỏ hàng
+    await axios.delete(`http://localhost:4000/cart/clear/${userId}`);
+    setCartItems([]);
+
+    // Chuyển sang trang My Orders
+    navigate("/myorder");
+  } catch (error) {
+    console.error("Error placing order:", error);
+    const msg =
+      error?.response?.data?.message ||
+      error?.response?.data ||
+      error?.message ||
+      "Failed to place order";
+    toast.error(String(msg));
+  }
+};
+
 
   return (
     <form className='place-order' onSubmit={handlePayment}>
