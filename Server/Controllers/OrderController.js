@@ -936,7 +936,7 @@ const placeOrder = async (req, res) => {
     const totalAmount = subtotal;
 
     const order = await orderCollection.create({
-      userId: new mongoose.Types.ObjectId(userId), // ép ObjectId
+      userId: new mongoose.Types.ObjectId(userId),
       address,
       products: orderProducts,
       totalAmount,
@@ -993,7 +993,7 @@ const placeOrderSplit = async (req, res) => {
     for (const [, arr] of groups) {
       const subtotal = arr.reduce((s, x) => s + x.price * x.quantity, 0);
       docsToCreate.push({
-        userId: new mongoose.Types.ObjectId(userId), // ép ObjectId
+        userId: new mongoose.Types.ObjectId(userId),
         address,
         products: arr,
         totalAmount: subtotal,
@@ -1002,10 +1002,41 @@ const placeOrderSplit = async (req, res) => {
     }
 
     const created = await orderCollection.insertMany(docsToCreate);
-    return res.status(201).json(created); // trả thẳng mảng
+    return res.status(201).json(created);
   } catch (err) {
     console.error("placeOrderSplit error:", err);
     return res.status(400).json({ message: err?.message || "Create order failed" });
+  }
+};
+
+/**
+ * PATCH /updateorder/:orderId
+ * Restaurant/Admin cập nhật trạng thái đơn
+ */
+const updateOrdersts = async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: 'Status is required' });
+    }
+
+    const order = await orderCollection.findByIdAndUpdate(
+      req.params.orderId,
+      { status },
+      { new: true }
+    );
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    return res.json(order);
+  } catch (error) {
+    console.error('updateOrdersts error:', error);
+    return res
+      .status(500)
+      .json({ message: 'Failed to update order status' });
   }
 };
 
@@ -1017,7 +1048,7 @@ const getOrdersByUser = async (req, res) => {
     const userId = req.params.userId;
 
     const orders = await orderCollection
-      .find({ userId: new mongoose.Types.ObjectId(userId) }) // ép sang ObjectId
+      .find({ userId: new mongoose.Types.ObjectId(userId) })
       .populate("products.productId")
       .sort({ createdAt: -1 });
 
@@ -1036,7 +1067,7 @@ const restuarentOrder = async (req, res) => {
     const restaurantId = req.params.restaurantId;
 
     const orders = await orderCollection
-      .find({ "products.restaurantId": new mongoose.Types.ObjectId(restaurantId) }) // ép sang ObjectId
+      .find({ "products.restaurantId": new mongoose.Types.ObjectId(restaurantId) })
       .populate({ path: "products.productId", select: "name price" })
       .sort({ createdAt: -1 });
 
@@ -1047,13 +1078,90 @@ const restuarentOrder = async (req, res) => {
   }
 };
 
-// Các hàm khác giữ nguyên
-const updateOrdersts = async (req, res) => { /* ... */ };
-const Allorders = async (req, res) => { /* ... */ };
-const deleteCart = async (req, res) => { /* ... */ };
-const CancelOrder = async (req, res) => { /* ... */ };
-const Ordercount = async (req, res) => { /* ... */ };
-const getTotalTurnover = async (req, res) => { /* ... */ };
+/**
+ * DELETE /cart/clear/:userId
+ */
+const deleteCart = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    await CartCollection.deleteMany({ userId: new mongoose.Types.ObjectId(userId) });
+    return res.status(200).json({ message: 'Cart cleared successfully' });
+  } catch (error) {
+    console.error('deleteCart error:', error);
+    return res
+      .status(500)
+      .json({ message: 'Failed to clear cart' });
+  }
+};
+
+/**
+ * PUT /cancelOrder/:id
+ */
+const CancelOrder = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const order = await orderCollection.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+    if (order.status === 'Cancelled') {
+      return res.status(400).json({ message: 'Order is already cancelled' });
+    }
+    order.status = 'Cancelled';
+    await order.save();
+    return res.json({ success: true, message: 'Order cancelled successfully' });
+  } catch (err) {
+    console.error('CancelOrder error:', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+/**
+ * GET /Allorders (admin)
+ */
+const Allorders = async (req, res) => {
+  try {
+    const response = await orderCollection
+      .find()
+      .populate({ path: 'products.productId', select: 'name' })
+      .sort({ createdAt: -1 });
+    return res.status(200).json(response);
+  } catch (err) {
+    console.error('Allorders error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+/**
+ * GET /Ordercount
+ */
+const Ordercount = async (req, res) => {
+  try {
+    const count = await orderCollection.countDocuments();
+    return res.json({ count });
+  } catch (err) {
+    return res.status(500).json({ message: 'internal server error' });
+  }
+};
+
+/**
+ * GET /turnover
+ */
+const getTotalTurnover = async (req, res) => {
+  try {
+    const orders = await orderCollection.find();
+    const totalTurnover = orders.reduce(
+      (acc, order) => acc + Number(order.totalAmount || 0),
+      0
+    );
+    return res.status(200).json({ turnover: totalTurnover });
+  } catch (err) {
+    console.error('getTotalTurnover error:', err);
+    return res
+      .status(500)
+      .json({ message: 'Error fetching total turnover' });
+  }
+};
 
 module.exports = {
   placeOrder,
