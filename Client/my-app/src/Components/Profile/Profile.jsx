@@ -1,116 +1,3 @@
-// import axios from 'axios';
-// import React, { useContext, useEffect } from 'react';
-// import './Profile.css';
-// import edit1 from '../../Pages/HotelPages/icons8-edit-25 (1).png';
-// import { Link } from 'react-router-dom';
-// import { Context } from '../../Context/Context';
-
-// function Profile() {
-//     const { userId, token, profile, setProfile } = useContext(Context);
-
-//     useEffect(() => {
-//         if (token) {
-//             axios.get(`http://localhost:4000/proview/${userId}`, {
-//                 headers: { Authorization: `Bearer ${token}` }
-//             }).then(res => {
-//                 setProfile(res.data);
-//             }).catch(err => {
-//                 console.error(err);
-//             });
-//         }
-//     }, [userId, setProfile, token]);
-
-//     if (!profile) {
-//         return <div className="loading">Loading...</div>;
-//     }
-
-//     return (
-//         <div className="profile">
-//             <h2>Welcome, {profile.name}!</h2>
-//             <div className='profile-item'>
-//                 <div className="profile-details">
-//                     <p><strong>Name:</strong> {profile.name}</p>
-//                     <p><strong>Email:</strong> {profile.email}</p>
-//                     <p><strong>Role:</strong> {profile.role}</p>
-//                 </div>
-//                 <div className="edit-logo">
-//                     <Link to={`/profileUpdate/${profile._id}`}>
-//                         <img src={edit1} alt="Edit Profile" />
-//                     </Link>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
-
-// export default Profile;
-
-/////////////////////////////////////////////////////////////////////////////////// //////////////////////////////////////////////////////////////////////////
-
-
-// import React, { useContext, useEffect, useState } from "react";
-// import axios from "axios";
-// import { useParams, Link } from "react-router-dom";
-// import "./Profile.css";
-// import edit1 from "../../Pages/HotelPages/icons8-edit-25 (1).png";
-// import { Context } from "../../Context/Context";
-
-// function Profile() {
-//   const { id } = useParams();                  // /profile/:id
-//   const { userId, token } = useContext(Context);
-
-//   // nếu URL chưa có id, dùng userId trong Context
-//   const effectiveId = id || userId;
-
-//   const [profile, setProfile] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     async function fetchProfile() {
-//       try {
-//         const res = await axios.get(`http://localhost:4000/profile/${effectiveId}`, {
-//           headers: { Authorization: `Bearer ${token}` }, // nếu BE yêu cầu auth
-//         });
-//         setProfile(res.data); // { _id, name, email, role }
-//       } catch (err) {
-//         console.error("Load profile failed:", err?.response || err);
-//         setProfile(null);
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-//     if (effectiveId) fetchProfile();
-//   }, [effectiveId, token]);
-
-//   if (loading) return <div className="loading">Loading...</div>;
-//   if (!profile) return <div className="loading">Không tải được hồ sơ.</div>;
-
-//   return (
-//     <div className="profile">
-//       <h2>Welcome, {profile.name}!</h2>
-
-//       <div className="profile-item">
-//         <div className="profile-details">
-//           <p><strong>Name:</strong> {profile.name}</p>
-//           <p><strong>Email:</strong> {profile.email}</p>
-//           <p><strong>Role:</strong> {profile.role}</p>
-//         </div>
-
-//         <div className="edit-logo">
-//           <Link to={`/profileUpdate/${profile._id}`}>
-//             <img src={edit1} alt="Edit Profile" />
-//           </Link>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default Profile;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, Link } from "react-router-dom";
@@ -129,18 +16,21 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [msg, setMsg] = useState("");
 
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [deliveredOrders, setDeliveredOrders] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+
   useEffect(() => {
     async function fetchProfile() {
       setLoading(true);
-      setMsg("");
       try {
-        // thử endpoint /profile trước
         const r1 = await axios.get(`${API}/profile/${effectiveId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
         setProfile(r1.data);
       } catch (e1) {
-        // nếu 404 hoặc lỗi, thử lại /proview
         try {
           const r2 = await axios.get(`${API}/proview/${effectiveId}`, {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -157,6 +47,30 @@ function Profile() {
     }
     if (effectiveId) fetchProfile();
   }, [effectiveId, token]);
+
+  const fetchDeliveredOrders = async () => {
+    if (!startDate || !endDate) {
+      alert("Vui lòng chọn khoảng thời gian");
+      return;
+    }
+    try {
+      const res = await axios.get(`${API}/getDeliveredOrders`, {
+        params: {
+          restaurantId: effectiveId,
+          startDate,
+          endDate,
+        },
+      });
+      setDeliveredOrders(res.data.orders || []);
+      setTotalAmount(res.data.totalAmount || 0);
+      setTotalCount(res.data.totalCount || 0);
+    } catch (err) {
+      console.error("fetchDeliveredOrders error:", err);
+      setDeliveredOrders([]);
+      setTotalAmount(0);
+      setTotalCount(0);
+    }
+  };
 
   if (loading) return <div className="loading">Loading...</div>;
   if (!profile) return <div className="loading">{msg || "Không tải được hồ sơ."}</div>;
@@ -176,9 +90,55 @@ function Profile() {
           </Link>
         </div>
       </div>
+
+      {profile.role === "Restaurant" && (
+        <div className="delivered-stats">
+          <h3>📊 Thống kê đơn hàng Delivered</h3>
+          <div style={{ marginBottom: "10px" }}>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={{ marginLeft: "8px" }}
+            />
+            <button onClick={fetchDeliveredOrders} style={{ marginLeft: "10px" }}>
+              Filter Orders
+            </button>
+          </div>
+
+          {deliveredOrders.length === 0 ? (
+            <p>Không có đơn hàng trong khoảng thời gian đã chọn.</p>
+          ) : (
+            <table border="1" cellPadding="8" style={{ width: "100%", marginTop: "10px" }}>
+              <thead>
+                <tr>
+                  <th>Mã đơn hàng</th>
+                  <th>Giá tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                {deliveredOrders.map((order) => (
+                  <tr key={order._id}>
+                    <td>{order._id}</td>
+                    <td>${order.totalAmount}</td>
+                  </tr>
+                ))}
+                <tr style={{ fontWeight: "bold" }}>
+                  <td>Tổng ({totalCount} đơn)</td>
+                  <td>${totalAmount}</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
 export default Profile;
-
