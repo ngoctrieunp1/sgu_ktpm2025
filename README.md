@@ -128,4 +128,4 @@ npm start</code></pre>
 <hr>
 
 <h2>📝 License</h2>
-<p>This project is licensed under the <a href="LICENSE" target="_blank">MIT License</a>.</p>
+<p>This project is licensed unnder the <a href="LICENSE" target="_blank">MIT License</a>.</p>
