@@ -20,29 +20,31 @@ function List() {
     });
   }, [token]);
 
-  return (
-    <div className='food-disp'>
-      <h2>Explore Top dishes near you</h2>
-      <div className="food-disp-list">
-        {view.slice().reverse().map((disp) => (  // Reverse the view array for LIFO display
-          <div className='food-item' key={disp._id}>
-            <div className="food-item-container">
-              <Link to={`/product/${disp._id}`}>
-                <img src={disp.image} alt="" className='food-item-img' />
-              </Link>
-            </div>
-            <div className="food-item-info">
-              <div className="food-item-name-rating">
-                <p>{disp.name}</p>
-              </div>
-              <p className='food-item-descrip'>{disp.description}</p>
-              <p className='food-item-price'>${disp.price}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  // Cập nhật lại xóa tính năng food-list của restaurant (phase3)
+
+  // return (
+  //   <div className='food-disp'>
+  //     <h2>Explore Top dishes near you</h2>
+  //     <div className="food-disp-list">
+  //       {view.slice().reverse().map((disp) => (  // Reverse the view array for LIFO display
+  //         <div className='food-item' key={disp._id}>
+  //           <div className="food-item-container">
+  //             <Link to={`/product/${disp._id}`}>
+  //               <img src={disp.image} alt="" className='food-item-img' />
+  //             </Link>
+  //           </div>
+  //           <div className="food-item-info">
+  //             <div className="food-item-name-rating">
+  //               <p>{disp.name}</p>
+  //             </div>
+  //             <p className='food-item-descrip'>{disp.description}</p>
+  //             <p className='food-item-price'>${disp.price}</p>
+  //           </div>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   </div>
+  // );
 }
 
 export default List;
