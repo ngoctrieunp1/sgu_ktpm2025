@@ -90,7 +90,10 @@ function Cart() {
             <p>Total</p>
             <p>${getTotalPrice() + 0}</p>
           </div>
-          <button onClick={() => navigate("/placeorder")} className='checkout-btn'>PROCEED TO CHECKOUT</button>
+
+              {/* tạm ẩn để sửa dụng Branch 2 */}
+
+          {/* <button onClick={() => navigate("/placeorder")} className='checkout-btn'>PROCEED TO CHECKOUT</button> */}
         </div>
       </div>
     </div>
