@@ -36,10 +36,11 @@ function RestNav() {
       </div>
     <ul className={`nav-menu ${show ? 'nav-menu-active' : ''}`}>
      <Link to='/home' style={{textDecoration:"none",color: "#49557e"}}><li onClick={()=>{setmenus('home'); closeMenu()}} className={menus==='home'?'active':""} >Home</li></Link> 
-     <Link to='/add-item' style={{textDecoration:"none",color: "#49557e"}}> <li onClick={()=>{setmenus('menu'); closeMenu()}} className={menus==='menu'?'active':""}>Add-Items</li></Link> 
+     {/* tạm comment để sử dụng Branch 3 */}
+     {/* <Link to='/add-item' style={{textDecoration:"none",color: "#49557e"}}> <li onClick={()=>{setmenus('menu'); closeMenu()}} className={menus==='menu'?'active':""}>Add-Items</li></Link> 
      <Link to='/list-item' style={{textDecoration:"none",color: "#49557e"}}> <li onClick={()=>{setmenus('mobile-app'); closeMenu()}}  className={menus==='mobile-app'?'active':""}>List-Items</li></Link> 
      <Link to='/orders' style={{textDecoration:"none",color: "#49557e"}}><li onClick={()=>{setmenus('contact'); closeMenu()}} className={menus==='contact'?'active':""}>Orders</li></Link>
-     <Link to={`/restaurant/reviews`} style={{textDecoration:"none",color: "#49557e"}}><li onClick={()=>{setmenus('review'); closeMenu()}} className={menus==='review'?'active':""}>Reviews</li></Link>
+     <Link to={`/restaurant/reviews`} style={{textDecoration:"none",color: "#49557e"}}><li onClick={()=>{setmenus('review'); closeMenu()}} className={menus==='review'?'active':""}>Reviews</li></Link> */}
     </ul>
     <div className="navbar-right">
      

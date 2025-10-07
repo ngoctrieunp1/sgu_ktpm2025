@@ -91,7 +91,9 @@ function Profile() {
         </div>
       </div>
 
-      {profile.role === "Restaurant" && (
+      {/* tạm ẩn để sửa dụng Branch 3 */}
+
+      {/* {profile.role === "Restaurant" && (
         <div className="delivered-stats">
           <h3>📊 Thống kê đơn hàng Delivered</h3>
           <div style={{ marginBottom: "10px" }}>
@@ -136,7 +138,7 @@ function Profile() {
             </table>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
