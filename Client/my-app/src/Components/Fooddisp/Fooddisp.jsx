@@ -9,7 +9,7 @@ function Fooddisp({category,setcategory}) {
     <div className='food-disp'>
    {/* <h2>Top dishes near you</h2> */}
    <div className="food-disp-list">
-   {/* <FoodItem/> */}
+   {/* <FooddItem/> */}
    </div>
     </div>
   )

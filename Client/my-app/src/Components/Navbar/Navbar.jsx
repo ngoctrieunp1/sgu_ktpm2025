@@ -52,20 +52,26 @@ function Navbar() {
         <Link to="/home" style={{ textDecoration: 'none', color: '#49557e' }} onClick={closeMenu}>
           <li className={location.pathname === '/home' ? 'active' : ''}>Home</li>
         </Link>
-        <Link to="/menu" style={{ textDecoration: 'none', color: '#49557e' }} onClick={closeMenu}>
+
+        {/* tạm ẩn để sửa dụng Brand 1 */}
+
+        {/* <Link to="/menu" style={{ textDecoration: 'none', color: '#49557e' }} onClick={closeMenu}>
           <li className={location.pathname === '/menu' ? 'active' : ''}>Menu</li>
-        </Link>
+        </Link> */}
         
         {/* tạm ẩn để sửa dụng Brand 2 */}
 
         {/* <Link to="/myorder" style={{ textDecoration: 'none', color: '#49557e' }} onClick={closeMenu}>
           <li className={location.pathname === '/myorder' ? 'active' : ''}>Order</li>
         </Link> */}
-        <Link to={cartPath} onClick={closeMenu} style={{ textDecoration: 'none' }}>
+
+        {/* tạm ẩn để sửa dụng Brand 1 */}
+
+        {/* <Link to={cartPath} onClick={closeMenu} style={{ textDecoration: 'none' }}>
           <li>
             <img src={basket_icon} alt="Basket" />
           </li>
-        </Link>
+        </Link> */}
       </ul>
 
       <div className="navbar-right">
