@@ -2,6 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "private": true,
+  "description": "Node/Express API for sgu_ktpm2025",
   "main": "Server.js",
   "scripts": {
     "start": "node Server.js",
@@ -21,5 +22,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
