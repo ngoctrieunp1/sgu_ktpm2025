@@ -3,39 +3,14 @@
 import '@testing-library/jest-dom';
 
 /**
- * 1) Mock axios
- * - Nếu bạn CÓ file `src/__mocks__/axios.js` thì đổi dòng dưới thành:  jest.mock('axios');
- * - Nếu bạn KHÔNG có file manual mock, giữ nguyên factory dưới đây.
+ * 1) Bảo Jest dùng manual mock ở thư mục __mocks__/axios.js
+ * (file này bạn vừa paste ở trên).
  */
-jest.mock('axios', () => {
-  const instance = {
-    get:    jest.fn(() => Promise.resolve({ data: [] })),
-    post:   jest.fn(() => Promise.resolve({ data: {} })),
-    put:    jest.fn(() => Promise.resolve({ data: {} })),
-    patch:  jest.fn(() => Promise.resolve({ data: {} })),
-    delete: jest.fn(() => Promise.resolve({})),
-    interceptors: {
-      request: { use: jest.fn(), eject: jest.fn() },
-      response:{ use: jest.fn(), eject: jest.fn() },
-    },
-    defaults: { headers: { common: {} } },
-  };
-  return {
-    create: () => instance,   // axios.create() -> instance giả
-    get: instance.get,
-    post: instance.post,
-    put: instance.put,
-    patch: instance.patch,
-    delete: instance.delete,
-    interceptors: instance.interceptors,
-    defaults: instance.defaults,
-    __instance: instance,
-  };
-});
+jest.mock('axios');
 
 /**
- * 2) Nếu dự án có `src/axios.js` (export const api = axios.create(...)),
- *    mock luôn module này để mọi import { api } nhận instance axios giả ở trên.
+ * 2) Nếu project có file src/axios.js (export const api = axios.create(...)),
+ *    mock luôn module này để tất cả import { api } dùng instance axios giả.
  *    Không có file đó cũng không sao.
  */
 jest.mock('./axios', () => {
@@ -44,7 +19,7 @@ jest.mock('./axios', () => {
 });
 
 /**
- * 3) Mock jsPDF + polyfill canvas.getContext để tránh crash trong jsdom
+ * 3) Mock jsPDF + polyfill canvas.getContext để tránh crash jsdom.
  */
 jest.mock('jspdf', () => {
   return jest.fn().mockImplementation(() => ({
@@ -54,7 +29,7 @@ jest.mock('jspdf', () => {
   }));
 });
 
-// jsdom không có canvas.getContext
+// jsdom không có canvas.getContext: polyfill tối thiểu
 if (!HTMLCanvasElement.prototype.getContext) {
   Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
     value: () => ({}),
@@ -62,8 +37,8 @@ if (!HTMLCanvasElement.prototype.getContext) {
 }
 
 /**
- * 4) Mock Context mặc định để tránh lỗi setUser / setAuthorized is not a function
- *    (Nếu app không dùng Context này thì cũng vô hại.)
+ * 4) Mock Context mặc định để tránh lỗi setUser/setRole/addCart... is not a function.
+ *    Thêm các field mà App/FoodItem/Components dùng tới.
  */
 jest.mock('./Context/Context', () => {
   const React = require('react');
@@ -71,9 +46,13 @@ jest.mock('./Context/Context', () => {
     Context: React.createContext({
       user: null,
       setUser: jest.fn(),
+      role: null,
+      setRole: jest.fn(),
       authorized: false,
       setAuthorized: jest.fn(),
-      // có thể thêm các field khác nếu component dùng: cart, setCart, etc.
+      addCart: jest.fn(),   // FoodItem dùng addCart
+      cart: [],
+      setCart: jest.fn(),
     }),
   };
 });
