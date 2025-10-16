@@ -1,26 +1,15 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-/**
- * 1) Bảo Jest dùng manual mock ở thư mục __mocks__/axios.js
- * (file này bạn vừa paste ở trên).
- */
+// Kích hoạt manual mock trong __mocks__/axios.js
 jest.mock('axios');
 
-/**
- * 2) Nếu project có file src/axios.js (export const api = axios.create(...)),
- *    mock luôn module này để tất cả import { api } dùng instance axios giả.
- *    Không có file đó cũng không sao.
- */
+// Mock file axios.js (wrapper)
 jest.mock('./axios', () => {
   const axios = require('axios'); // lấy mock ở trên
   return { api: axios.create() };
 });
 
-/**
- * 3) Mock jsPDF + polyfill canvas.getContext để tránh crash jsdom.
- */
+// Mock jsPDF
 jest.mock('jspdf', () => {
   return jest.fn().mockImplementation(() => ({
     addImage: jest.fn(),
@@ -29,17 +18,14 @@ jest.mock('jspdf', () => {
   }));
 });
 
-// jsdom không có canvas.getContext: polyfill tối thiểu
+// Polyfill canvas
 if (!HTMLCanvasElement.prototype.getContext) {
   Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
     value: () => ({}),
   });
 }
 
-/**
- * 4) Mock Context mặc định để tránh lỗi setUser/setRole/addCart... is not a function.
- *    Thêm các field mà App/FoodItem/Components dùng tới.
- */
+// Mock Context
 jest.mock('./Context/Context', () => {
   const React = require('react');
   return {
@@ -50,7 +36,7 @@ jest.mock('./Context/Context', () => {
       setRole: jest.fn(),
       authorized: false,
       setAuthorized: jest.fn(),
-      addCart: jest.fn(),   // FoodItem dùng addCart
+      addCart: jest.fn(),
       cart: [],
       setCart: jest.fn(),
     }),
