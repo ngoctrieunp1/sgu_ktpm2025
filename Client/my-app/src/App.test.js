@@ -3,7 +3,6 @@ import { render } from '@testing-library/react';
 import App from './App';
 import { Context } from './Context/Context';
 
-// Smoke test: chỉ cần render được App là pass.
 test('App renders without crashing', () => {
   const contextValue = {
     user: null,

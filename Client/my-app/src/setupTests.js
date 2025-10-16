@@ -1,9 +1,11 @@
+// jest-dom adds custom jest matchers for asserting on DOM nodes.
+// learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-// Kích hoạt manual mock trong __mocks__/axios.js
+// ⚠️ Phải đặt mock('axios') TRƯỚC tất cả import khác
 jest.mock('axios');
 
-// Mock file axios.js (wrapper)
+// Mock axios.js (wrapper)
 jest.mock('./axios', () => {
   const axios = require('axios'); // lấy mock ở trên
   return { api: axios.create() };
