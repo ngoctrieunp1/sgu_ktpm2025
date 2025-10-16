@@ -1,27 +1,25 @@
-// Client/my-app/src/__mocks__/axios.js
+// __mocks__/axios.js
+// Manual mock cho axios để Jest dùng thay vì package thật.
 
-// instance giả dùng cho mọi lời gọi API trong test
-const mockAxiosInstance = {
-  get: jest.fn(() => Promise.resolve({ data: {} })),
+const mockAxios = {
+  // Các HTTP method trả về Promise như axios thật
+  get: jest.fn(() => Promise.resolve({ data: [] })),
   post: jest.fn(() => Promise.resolve({ data: {} })),
   put: jest.fn(() => Promise.resolve({ data: {} })),
-  delete: jest.fn(() => Promise.resolve({ data: {} })),
-  // nếu code của bạn có dùng interceptors, thêm cấu trúc này cho an toàn
+  patch: jest.fn(() => Promise.resolve({ data: {} })),
+  delete: jest.fn(() => Promise.resolve({})),
+
+  // axios.create() trả về "instance" có cùng API
+  create: jest.fn(function () {
+    return mockAxios;
+  }),
+
+  // Để code không lỗi khi động vào interceptors / headers
   interceptors: {
     request: { use: jest.fn(), eject: jest.fn() },
     response: { use: jest.fn(), eject: jest.fn() },
   },
-};
-
-// “axios” mock: có create() trả về instance
-const mockAxios = {
-  create: jest.fn(() => mockAxiosInstance),
-  // cũng map trực tiếp các method để code nào dùng axios.get(...) vẫn chạy
-  get: mockAxiosInstance.get,
-  post: mockAxiosInstance.post,
-  put: mockAxiosInstance.put,
-  delete: mockAxiosInstance.delete,
-  interceptors: mockAxiosInstance.interceptors,
+  defaults: { headers: { common: {} } },
 };
 
 export default mockAxios;

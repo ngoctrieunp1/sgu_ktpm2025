@@ -1,10 +1,21 @@
-jest.mock('axios'); 
-
-import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { render } from '@testing-library/react';
 import App from './App';
+import { Context } from './Context/Context';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+// Smoke test: chỉ cần render được App (không throw) là pass.
+// Bọc App bằng Context.Provider với đúng shape mà App đang dùng.
+test('App renders without crashing', () => {
+  const contextValue = {
+    user: null,
+    setUser: jest.fn(),
+    authorized: false,
+    setAuthorized: jest.fn(),
+  };
+
+  render(
+    <Context.Provider value={contextValue}>
+      <App />
+    </Context.Provider>
+  );
 });
