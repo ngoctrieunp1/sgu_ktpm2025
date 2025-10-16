@@ -1,7 +1,8 @@
-import React from 'react';
+// src/App.test.js
 import { render } from '@testing-library/react';
-import App from './App';
+import { MemoryRouter } from 'react-router-dom';
 import { Context } from './Context/Context';
+import App from './App';
 
 test('App renders without crashing', () => {
   const contextValue = {
@@ -18,7 +19,9 @@ test('App renders without crashing', () => {
 
   render(
     <Context.Provider value={contextValue}>
-      <App />
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     </Context.Provider>
   );
 });
