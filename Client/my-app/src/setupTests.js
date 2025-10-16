@@ -1,33 +1,23 @@
-// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// learn more: https://github.com/testing-library/jest-dom
+// src/setupTests.js
 import '@testing-library/jest-dom';
 
-// ⚠️ Phải đặt mock('axios') TRƯỚC tất cả import khác
+// 1) Dùng manual mock trong src/__mocks__/axios.js
 jest.mock('axios');
 
-// Mock axios.js (wrapper)
+// 2) Mock wrapper ./axios để mọi import { api } dùng cùng instance axios giả
 jest.mock('./axios', () => {
-  const axios = require('axios'); // lấy mock ở trên
+  const axios = require('axios');      // <-- chính là mock ở trên
   return { api: axios.create() };
 });
 
-// Mock jsPDF
-jest.mock('jspdf', () => {
-  return jest.fn().mockImplementation(() => ({
-    addImage: jest.fn(),
-    text: jest.fn(),
-    save: jest.fn(),
-  }));
-});
-
-// Polyfill canvas
+// 3) Polyfill canvas cho jsdom
 if (!HTMLCanvasElement.prototype.getContext) {
   Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
     value: () => ({}),
   });
 }
 
-// Mock Context
+// 4) Mock Context mặc định (thêm các field mà app dùng)
 jest.mock('./Context/Context', () => {
   const React = require('react');
   return {
@@ -44,3 +34,12 @@ jest.mock('./Context/Context', () => {
     }),
   };
 });
+
+// 5) (Tuỳ chọn) Nếu dự án có dùng jsPDF ở test, mở phần này
+// jest.mock('jspdf', () => {
+//   return jest.fn().mockImplementation(() => ({
+//     addImage: jest.fn(),
+//     text: jest.fn(),
+//     save: jest.fn(),
+//   }));
+// });
