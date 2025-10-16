@@ -1,0 +1,38 @@
+name: CI/CD for SGU_KTPM2025
+
+on:
+  push:
+    branches: [ CNPM ]   # Mỗi khi bạn push code lên nhánh main, pipeline sẽ tự chạy
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧾 Checkout source code
+        uses: actions/checkout@v4
+
+      - name: 🧪 Test backend
+        working-directory: Server
+        run: |
+          npm ci
+          npm test --if-present
+
+      - name: 🧪 Test frontend
+        working-directory: Client/my-app
+        run: |
+          npm ci
+          npm test --if-present -- --watchAll=false
+
+      - name: 🔑 Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: 🏗️ Build & Push Backend image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/sgu_backend:latest ./Server
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/sgu_backend:latest
+
+      - name: 🏗️ Build & Push Frontend image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/sgu_frontend:latest ./Client/my-app
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/sgu_frontend:latest
