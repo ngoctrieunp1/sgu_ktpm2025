@@ -1,27 +1,30 @@
-// src/App.test.js
+import React from 'react';
 import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { Context } from './Context/Context';
 import App from './App';
+import { Context } from './Context/Context';
+
+// ⚠️ KHÔNG bọc thêm MemoryRouter/BrowserRouter ở đây
+// vì App.js của bạn đã bọc Router rồi.
 
 test('App renders without crashing', () => {
+  // Giá trị context tối thiểu để App mount không lỗi.
   const contextValue = {
+    backendUrl: 'http://localhost:4000',
+    currency: '₫',
+    cartItems: [],
+    addToCart: jest.fn(),
+    removeFromCart: jest.fn(),
+    getTotalCartAmount: jest.fn(() => 0),
+    token: '',
+    setToken: jest.fn(),
     user: null,
     setUser: jest.fn(),
-    role: null,
-    setRole: jest.fn(),
-    authorized: false,
-    setAuthorized: jest.fn(),
-    addCart: jest.fn(),
-    cart: [],
-    setCart: jest.fn(),
+    // thêm gì nữa nếu App/child component có đọc
   };
 
   render(
     <Context.Provider value={contextValue}>
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
+      <App />
     </Context.Provider>
   );
 });
