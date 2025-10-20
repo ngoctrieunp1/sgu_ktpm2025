@@ -105,7 +105,7 @@ function Login() {
       if (String(finalRole).toLowerCase() === 'restaurant') {
         navigate('/orders');
       } else {
-        navigate('/home');
+        navigate('/');
       }
     } catch (err) {
       console.error(err);

@@ -45,9 +45,9 @@ const AdminDash = () => {
     const stats = [
         { title: 'Total Users', count: users, icon: <FaUsers />, color: '#FFC107 ',route:"/getallusers" },
         { title: 'Total Resturant\'s', count: resturant, icon: <FaMapMarkerAlt />, color: '#6F42C1',route:"/getallres" },
-        { title: 'Total Products', count: products, icon:  <FaUtensils />, color: '#17A2B8' ,route:"/listAllitems"},
-        { title: 'Total Order\'s', count:totalOrder, icon: <FaClock />, color: '#4a90e2',route:"/getallorders" },
-        { title: 'Total Turnover', count: `$${totalTurnover}`, icon: <FaDollarSign />, color: '#28A745' }
+        // { title: 'Total Products', count: products, icon:  <FaUtensils />, color: '#17A2B8' ,route:"/listAllitems"},
+        // { title: 'Total Order\'s', count:totalOrder, icon: <FaClock />, color: '#4a90e2',route:"/getallorders" },
+        // { title: 'Total Turnover', count: `$${totalTurnover}`, icon: <FaDollarSign />, color: '#28A745' }
       ];
   return (
     <div className="dashboard">

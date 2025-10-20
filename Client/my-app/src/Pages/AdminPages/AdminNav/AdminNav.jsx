@@ -117,7 +117,7 @@ function AdminNav() {
           <ListItemIcon><PeopleIcon /></ListItemIcon>
           <ListItemText primary="restaurant " style={{ color: '#333' }} />
         </StyledListItem>
-        <StyledListItem button component={Link} to='/listAllitems'>
+        {/* <StyledListItem button component={Link} to='/listAllitems'>
         <ListItemIcon><WorkIcon /></ListItemIcon>
           <ListItemText primary="List All Items" style={{ color: '#333' }} />
         </StyledListItem>
@@ -128,7 +128,7 @@ function AdminNav() {
         <StyledListItem button component={Link} to='/getallreviews'>
           <ListItemIcon><AssignmentIcon /></ListItemIcon>
           <ListItemText primary="Reviews" style={{ color: '#333' }} />
-        </StyledListItem>
+        </StyledListItem> */}
         <button onClick={logout} style={{width:"130px",height:"30px",borderRadius:"5px",marginLeft:"10px",marginTop:"10px"}}><IoMdLogOut /></button>
       </List>
     </StyledDrawer>
