@@ -1,39 +1,42 @@
+// src/setupTests.js
 import '@testing-library/jest-dom';
 
-// jsdom không có canvas -> mock để tránh lỗi
-if (!HTMLCanvasElement.prototype.getContext) {
-  HTMLCanvasElement.prototype.getContext = jest.fn();
-}
+// ---- Mock axios (toàn cục) ----
+jest.mock('axios', () => {
+  const mock = {
+    get:    jest.fn(() => Promise.resolve({ data: [] })),
+    post:   jest.fn(() => Promise.resolve({ data: {} })),
+    put:    jest.fn(() => Promise.resolve({ data: {} })),
+    patch:  jest.fn(() => Promise.resolve({ data: {} })),
+    delete: jest.fn(() => Promise.resolve({})),
 
-// mock matchMedia (nhiều thư viện UI cần)
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
+    // axios.create() trả về "instance" có cùng API
+    create: jest.fn(function () { return mock; }),
+
+    // cho code không lỗi khi chạm interceptors/headers
+    interceptors: {
+      request: { use: jest.fn(), eject: jest.fn() },
+      response:{ use: jest.fn(), eject: jest.fn() },
+    },
+    defaults: { headers: { common: {} } },
+  };
+  return mock;
 });
 
-// Cho Jest biết dùng mock axios ở __mocks__/axios.js
-jest.mock('axios');
-
-// Mock Context để tránh lỗi setAuthorized undefined
-jest.mock('./Context/Context', () => {
-  const React = require('react');
-  return {
-    Context: React.createContext({
-      setAuthorized: jest.fn(),
-      setUser: jest.fn(),
-      setRole: jest.fn(),
-      authorized: false,
-      user: null,
-      role: null,
-    }),
+// ---- Mock jsPDF (tránh lỗi canvas trong JSDOM) ----
+jest.mock('jspdf', () => {
+  return function JsPDF() {
+    return {
+      addImage: jest.fn(),
+      text:     jest.fn(),
+      save:     jest.fn(),
+    };
   };
 });
+
+// ---- Fake canvas.getContext cho JSDOM ----
+if (!HTMLCanvasElement.prototype.getContext) {
+  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+    value: () => ({}),
+  });
+}
