@@ -1,24 +1,39 @@
-// Kích hoạt jest-dom (matcher như toBeInTheDocument, v.v.)
 import '@testing-library/jest-dom';
 
-// Dùng mock axios trong src/__mocks__/axios.js
+// jsdom không có canvas -> mock để tránh lỗi
+if (!HTMLCanvasElement.prototype.getContext) {
+  HTMLCanvasElement.prototype.getContext = jest.fn();
+}
+
+// mock matchMedia (nhiều thư viện UI cần)
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// Cho Jest biết dùng mock axios ở __mocks__/axios.js
 jest.mock('axios');
 
-// Tránh lỗi jsdom khi có <canvas> (ví dụ jspdf/qr code, chart…)
-if (!window.HTMLCanvasElement.prototype.getContext) {
-  window.HTMLCanvasElement.prototype.getContext = () => ({});
-}
-
-// Mock jsPDF để import không bị crash trong môi trường test
-jest.mock('jspdf', () =>
-  jest.fn().mockImplementation(() => ({
-    addImage: jest.fn(),
-    save: jest.fn(),
-    text: jest.fn(),
-  }))
-);
-
-// (Tuỳ chọn) tránh warning nếu code gọi window.scrollTo
-if (!window.scrollTo) {
-  window.scrollTo = () => {};
-}
+// Mock Context để tránh lỗi setAuthorized undefined
+jest.mock('./Context/Context', () => {
+  const React = require('react');
+  return {
+    Context: React.createContext({
+      setAuthorized: jest.fn(),
+      setUser: jest.fn(),
+      setRole: jest.fn(),
+      authorized: false,
+      user: null,
+      role: null,
+    }),
+  };
+});
