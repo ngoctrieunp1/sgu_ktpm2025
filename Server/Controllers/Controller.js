@@ -27,14 +27,63 @@ const create=async (req, res) => {
     }
 }
 // view products
-const view=async(req,res)=>{
-    try{
-        const response=await productslCollection.find()
-        res.status(201).send(response)
-    }catch(err){
-        res.status(500).send({message:"internal server error"})
-    }
-}
+const view = async (req, res) => {
+  try {
+    const products = await productslCollection.aggregate([
+      // 1️⃣ Chỉ lấy món chưa bị ẩn
+      {
+        $match: {
+          $or: [{ disabled: { $exists: false } }, { disabled: false }],
+        },
+      },
+
+      // 2️⃣ Ép restaurantId thành ObjectId nếu là string (phòng trường hợp dữ liệu trộn)
+      {
+        $addFields: {
+          restaurantObjId: {
+            $cond: [
+              { $eq: [{ $type: "$restaurantId" }, "objectId"] },
+              "$restaurantId",
+              { $toObjectId: "$restaurantId" },
+            ],
+          },
+        },
+      },
+
+      // 3️⃣ Join sang users để lấy thông tin blocked
+      {
+        $lookup: {
+          from: "users", // đúng tên collection của bạn trong MongoDB
+          localField: "restaurantObjId",
+          foreignField: "_id",
+          as: "restaurant",
+          pipeline: [{ $project: { _id: 0, blocked: 1 } }],
+        },
+      },
+
+      // 4️⃣ Tạo cờ "restaurantBlocked"
+      {
+        $addFields: {
+          restaurantBlocked: {
+            $ifNull: [{ $first: "$restaurant.blocked" }, false],
+          },
+        },
+      },
+
+      // 5️⃣ Chỉ lấy món của nhà hàng chưa bị block
+      { $match: { restaurantBlocked: false } },
+
+      // 6️⃣ Ẩn field phụ cho gọn
+      { $project: { restaurant: 0, restaurantBlocked: 0, restaurantObjId: 0 } },
+    ]);
+
+    res.status(200).json(products);
+  } catch (err) {
+    console.error("view error:", err);
+    res.status(500).json({ message: "internal server error" });
+  }
+};
+
 // get product by id 
 const getproducts=async(req,res)=>{
     try{
@@ -72,31 +121,72 @@ const remove=async (req,res)=>{
 }
 // search f products
 const searchproduct = async (req, res) => {
-    const { q, category, minPrice, maxPrice } = req.query;
+  try {
+    const { q = "", category, minPrice, maxPrice } = req.query;
 
-    try {
-        let query = {
-            name: { $regex: q, $options: 'i' }
-        };
+    const price = {};
+    if (minPrice) price.$gte = Number(minPrice);
+    if (maxPrice) price.$lte = Number(maxPrice);
 
-        // Add category filter if provided
-        if (category) {
-            query.category = category;
-        }
+    // Điều kiện lọc cơ bản (món chưa bị ẩn + theo tên / category / giá)
+    const baseMatch = {
+      $or: [{ disabled: { $exists: false } }, { disabled: false }],
+      ...(q.trim() ? { name: { $regex: q.trim(), $options: "i" } } : {}),
+      ...(category && category.trim() ? { category: category.trim() } : {}),
+      ...(Object.keys(price).length ? { price } : {}),
+    };
 
-        // Add price range filter if provided
-        if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = minPrice;
-            if (maxPrice) query.price.$lte = maxPrice;
-        }
+    const products = await productslCollection.aggregate([
+      // 1️⃣ Lọc theo điều kiện tìm kiếm
+      { $match: baseMatch },
 
-        const products = await productslCollection.find(query);
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching search results', error });
-    }
+      // 2️⃣ Ép kiểu restaurantId -> ObjectId (phòng trường hợp bị lưu chuỗi)
+      {
+        $addFields: {
+          restaurantObjId: {
+            $cond: [
+              { $eq: [{ $type: "$restaurantId" }, "objectId"] },
+              "$restaurantId",
+              { $toObjectId: "$restaurantId" },
+            ],
+          },
+        },
+      },
+
+      // 3️⃣ Join sang users để lấy trạng thái blocked
+      {
+        $lookup: {
+          from: "users", // tên collection user trong MongoDB
+          localField: "restaurantObjId",
+          foreignField: "_id",
+          as: "restaurant",
+          pipeline: [{ $project: { _id: 0, blocked: 1 } }],
+        },
+      },
+
+      // 4️⃣ Thêm field cờ blocked
+      {
+        $addFields: {
+          restaurantBlocked: {
+            $ifNull: [{ $first: "$restaurant.blocked" }, false],
+          },
+        },
+      },
+
+      // 5️⃣ Giữ lại chỉ món của nhà hàng chưa bị block
+      { $match: { restaurantBlocked: false } },
+
+      // 6️⃣ Bỏ field phụ cho gọn response
+      { $project: { restaurant: 0, restaurantBlocked: 0, restaurantObjId: 0 } },
+    ]);
+
+    return res.status(200).json(products);
+  } catch (err) {
+    console.error("searchproduct error:", err);
+    return res.status(500).json({ message: "internal server error" });
+  }
 };
+
 
 // single view for product
 const productview=async(req,res)=>{

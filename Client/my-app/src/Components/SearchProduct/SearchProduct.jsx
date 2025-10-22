@@ -30,6 +30,7 @@ function SearchProduct() {
             maxPrice: maxPrice || undefined,
           },
         });
+        
         setResults(response.data);
         setLoading(false);
       } catch (error) {
@@ -92,26 +93,31 @@ function SearchProduct() {
       </form>
 
       <div className="food-disp-list" style={{ color: 'black', textDecoration: 'none' }}>
-        {results.map((result) => (
-          <div className="food-item" key={result._id}>
-            <div className="food-item-container">
-              <Link to={`/product/${result._id}`}>
-                <img src={result.image} alt="" className="food-item-img" />
-              </Link>
-              <button onClick={() => addCart(result._id)} className="carttt">
-                Add to Cart
-              </button>
-            </div>
-            <div className="food-item-info">
-              <div className="food-item-name-rating">
-                <p style={{ color: 'black', textDecoration: 'none' }}>{result.name}</p>
-              </div>
-              <p className="food-item-descrip">{result.description}</p>
-              <p className="food-item-price">${result.price}</p>
-            </div>
-          </div>
-        ))}
+  {(Array.isArray(results) ? results : [])
+    // chỉ hiển thị món chưa ẩn và nhà hàng không bị block
+    .filter(p =>
+      !['true', '1', 1, true].includes(p?.disabled) &&
+      !p?.restaurantId?.blocked
+    )
+    .map((result) => (
+      <div className="food-item" key={result._id}>
+        <div className="food-item-container">
+          <Link to={`/product/${result._id}`}>
+            <img src={result.image} alt="" className="food-item-img" />
+          </Link>
+          <button onClick={() => addCart(result._id)} className="carttt">
+            Add to Cart
+          </button>
+        </div>
+        <div className="food-item-info">
+          <p style={{ color: 'black' }}>{result.name}</p>
+          <p className="food-item-descrip">{result.description}</p>
+          <p className="food-item-price">${result.price}</p>
+        </div>
       </div>
+    ))}
+</div>
+
     </div>
   );
 }
