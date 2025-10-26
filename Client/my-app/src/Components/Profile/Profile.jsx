@@ -119,6 +119,8 @@ function Profile() {
                 <tr>
                   <th>Mã đơn hàng</th>
                   <th>Giá tiền</th>
+                  <th>Chiết khấu (15%)</th>
+                  <th>Thu nhập (85%)</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,11 +128,15 @@ function Profile() {
                   <tr key={order._id}>
                     <td>{order._id}</td>
                     <td>${order.totalAmount}</td>
+                    <td>${order.totalAmount*0.15}</td>
+                    <td>${order.totalAmount*0.85}</td>
                   </tr>
                 ))}
                 <tr style={{ fontWeight: "bold" }}>
                   <td>Tổng ({totalCount} đơn)</td>
                   <td>${totalAmount}</td>
+                  <td>${totalAmount*0.15}</td>
+                  <td>${totalAmount*0.85}</td>
                 </tr>
               </tbody>
             </table>

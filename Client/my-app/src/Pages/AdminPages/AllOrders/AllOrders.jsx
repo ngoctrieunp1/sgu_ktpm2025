@@ -28,10 +28,11 @@ function AllOrders() {
         <p>All Order Lists</p>
         <div className="list-table1">
           <div className="list-table-format title1">
-           
             <b style={{color:"black"}}>Product Name</b>
             <b style={{color:"black"}}>Quantity</b>
             <b style={{color:"black"}}>Total Price</b>
+            <b style={{color:"black"}}>Restaurant Name</b>
+            
             <b style={{color:"black"}}>Address</b>
             <b style={{color:"black"}}>Status</b>
           </div>
@@ -54,6 +55,14 @@ function AllOrders() {
                   ))}
                 </p>
                 <p style={{color:"black"}}>${order.totalAmount}</p>
+                <p style={{color:"black"}}>
+                  {order.products.map(product => (
+                    <div key={product.productId}>
+                      {product.quantity}
+                    </div>
+                  ))}
+                </p>
+                
                 <p style={{color:"black"}}>
                   {order.address ? (
                     <>

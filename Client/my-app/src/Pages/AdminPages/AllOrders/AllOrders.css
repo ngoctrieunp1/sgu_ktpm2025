@@ -25,12 +25,11 @@
     width: 100%;
     margin-top: 20px;
     border-collapse: collapse;
-    
   }
   
   .list-table-format1 {
     display: grid;
-    grid-template-columns: 0.5fr 1fr 0.5fr 0.5fr 0fr;
+    grid-template-columns: 0.2fr 0.17fr 0.16fr 0.14fr 0.3fr 0fr;
     padding: 10px;
     border-bottom: 1px solid #ddd;
     align-items: center;
@@ -45,7 +44,7 @@
     align-items: center;
     font-size: 16px;
     font-weight: bold;
-    grid-template-columns: 0.5fr 1fr 0.5fr 0.5fr 0fr;
+    grid-template-columns: 0.17fr 0.17fr 0.17fr 0.19fr 0.27fr 0fr;
   }
   
   .list-table-format1 p {
