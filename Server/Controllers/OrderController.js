@@ -42,7 +42,8 @@ const placeOrder = async (req, res) => {
       address,
       products: orderProducts,
       totalAmount: subtotal,
-      status: "Pending",
+      // LƯU TRẠNG THÁI TẠI FIELD `status` (schema hiện tại của bạn)
+      status: "Payment pending",
     });
 
     return res.status(201).json(order);
@@ -56,6 +57,7 @@ const placeOrder = async (req, res) => {
 
 /**
  * POST /placeorder-split
+ * (tạo nhiều đơn theo từng nhà hàng)
  */
 const placeOrderSplit = async (req, res) => {
   try {
@@ -82,6 +84,7 @@ const placeOrderSplit = async (req, res) => {
       };
     });
 
+    // group theo restaurantId
     const groups = new Map();
     for (const l of lines) {
       const rid = String(l.restaurantId);
@@ -97,7 +100,7 @@ const placeOrderSplit = async (req, res) => {
         address,
         products: arr,
         totalAmount: subtotal,
-        status: "Pending",
+        status: "Payment pending",
       });
     }
 
@@ -113,23 +116,40 @@ const placeOrderSplit = async (req, res) => {
 
 /**
  * PATCH /updateorder/:orderId
+ * DEMO: dùng field `status` để lưu thanh toán:
+ *  - "Payment pending"
+ *  - "Payment completed"
+ *
+ * Đồng thời hỗ trợ payload cũ/mới:
+ *  - { status: "Payment completed" }  (khuyến nghị hiện tại)
+ *  - { payment_status: "Paid" | "Payment pending" }  (tương thích)
  */
 const updateOrdersts = async (req, res) => {
   try {
-    const { status } = req.body;
-    if (!status) {
-      return res.status(400).json({ message: "Status is required" });
+    const { orderId } = req.params;
+    const { status, payment_status } = req.body || {};
+
+    const patch = {};
+
+    if (typeof status === "string" && status.length > 0) {
+      // FE gửi đúng `status` -> lưu trực tiếp
+      patch.status = status;
+    } else if (typeof payment_status === "string" && payment_status.length > 0) {
+      // Trường hợp FE gửi `payment_status` -> map sang `status`
+      patch.status =
+        payment_status === "Paid" || payment_status === "Payment completed"
+          ? "Payment completed"
+          : "Payment pending";
     }
 
-    const order = await orderCollection.findByIdAndUpdate(
-      req.params.orderId,
-      { status },
-      { new: true }
-    );
-
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+    if (Object.keys(patch).length === 0) {
+      return res.status(400).json({ message: "No valid fields to update" });
     }
+
+    const order = await orderCollection.findByIdAndUpdate(orderId, patch, {
+      new: true,
+    });
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
     return res.json(order);
   } catch (error) {
@@ -259,6 +279,7 @@ const getTotalTurnover = async (req, res) => {
 
 /**
  * GET /getDeliveredOrders?restaurantId=...&startDate=...&endDate=...
+ * (đang dùng field cũ status = "Order Delivered" cho phần báo cáo)
  */
 const getDeliveredOrders = async (req, res) => {
   try {
@@ -274,13 +295,13 @@ const getDeliveredOrders = async (req, res) => {
     const orders = await orderCollection
       .find({
         "products.restaurantId": new mongoose.Types.ObjectId(restaurantId),
-        status: "Order Delivered", // phải khớp DB
+        status: "Your order has been delivered successfully",
         updatedAt: { $gte: start, $lte: end },
       })
       .populate("products.productId", "name price")
       .lean();
 
-    const totalAmount = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+    const totalAmount = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
     const totalCount = orders.length;
 
     return res.status(200).json({ orders, totalAmount, totalCount });

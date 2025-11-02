@@ -1,54 +1,89 @@
-
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState, useCallback } from 'react';
 import axios from 'axios';
 import { Context } from '../../../Context/Context';
 import parcels from '../../../Assets/admin_assets/parcel_icon.png';
 import './Order.css';
 
+const API_URL = 'http://localhost:4000';
+
+// Restaurant được phép chuyển:
+// - Payment completed -> Order is being prepared
+// - Order is being prepared -> Your order is on its way to you
+const NEXT_BY_RESTAURANT = {
+  'Payment pending': [], // Chờ admin, không thao tác
+  'Payment completed': ['Order is being prepared'],
+  'Order is being prepared': ['Your order is on its way to you'],
+  'Your order is on its way to you': [], // Bước này do ADMIN đổi sang Delivered
+  'Your order has been delivered successfully': [],
+  'Cancelled': [],
+};
+
 function Order() {
   const [orders, setOrders] = useState([]);
-  const { userId: ctxUserId, User } = useContext(Context);
+  const { userId: ctxUserId } = useContext(Context);
 
-  // Lấy token + restaurantId từ localStorage nếu Context chưa có
   const token = useMemo(() => localStorage.getItem('token') || '', []);
-  const restaurantId = useMemo(() => {
-    // Ưu tiên lấy từ Context, fallback localStorage
-    return ctxUserId || localStorage.getItem('userId') || '';
-  }, [ctxUserId]);
+  const restaurantId = useMemo(
+    () => ctxUserId || localStorage.getItem('userId') || '',
+    [ctxUserId]
+  );
+  const headers = useMemo(
+    () => (token ? { Authorization: `Bearer ${token}` } : {}),
+    [token]
+  );
+
+  const loadOrders = useCallback(async () => {
+    if (!token || !restaurantId) return;
+    try {
+      const res = await axios.get(`${API_URL}/restaurant/${restaurantId}`, { headers });
+      setOrders(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      console.error('Failed to fetch orders:', err);
+      setOrders([]);
+    }
+  }, [restaurantId, token, headers]);
 
   useEffect(() => {
-    if (!token || !restaurantId) return;
+    loadOrders();
+    const t = setInterval(loadOrders, 4000); // auto refresh mỗi 4s để đồng bộ với Admin
+    return () => clearInterval(t);
+  }, [loadOrders]);
 
-    const fetchOrders = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:4000/restaurant/${restaurantId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setOrders(Array.isArray(res.data) ? res.data : []);
-      } catch (err) {
-        console.error('Failed to fetch orders:', err);
-        setOrders([]);
-      }
-    };
-
-    fetchOrders();
-  }, [restaurantId, token]);
-
-  const handleStatusChange = async (orderId, status) => {
+  const handleStatusChange = async (orderId, nextStatus) => {
     try {
-      await axios.patch(
-        `http://localhost:4000/updateorder/${orderId}`,
-        { status },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setOrders(prev =>
-        prev.map(o => (o._id === orderId ? { ...o, status } : o))
-      );
+      await axios.patch(`${API_URL}/updateorder/${orderId}`, { status: nextStatus }, { headers });
+      setOrders(prev => prev.map(o => (o._id === orderId ? { ...o, status: nextStatus } : o)));
     } catch (err) {
       console.error('Error updating order status:', err);
     }
+  };
+
+  const nextOptions = (curr) => NEXT_BY_RESTAURANT[curr] || [];
+
+  const renderAction = (o) => {
+    const options = nextOptions(o.status);
+
+    if (o.status === 'Payment pending') {
+      return <p className="status-hint">⏳ Chờ Admin xác nhận thanh toán.</p>;
+    }
+    if (o.status === 'Your order is on its way to you') {
+      return <p className="status-hint">🚚 Đang giao. Bước “Delivered” do Admin xác nhận.</p>;
+    }
+    if (o.status === 'Cancelled' || o.status === 'Your order has been delivered successfully') {
+      return null;
+    }
+    if (options.length === 0) return null;
+
+    // Chỉ 1 bước kế tiếp hợp lệ
+    const next = options[0];
+    return (
+      <button
+        onClick={() => handleStatusChange(o._id, next)}
+        className="status-button"
+      >
+        {next}
+      </button>
+    );
   };
 
   if (!token || !restaurantId) {
@@ -76,18 +111,10 @@ function Order() {
             <div className="order-details">
               <ul className="order-products">
                 {(order.products || []).map((product, idx) => {
-                  const pname =
-                    product.name ||
-                    product.productId?.name ||
-                    'Unnamed product';
+                  const pname = product.name || product.productId?.name || 'Unnamed product';
                   return (
                     <li
-                      key={
-                        product.productId?._id ||
-                        product.productId ||
-                        product._id ||
-                        idx
-                      }
+                      key={product.productId?._id || product.productId || product._id || idx}
                       className="product-item"
                     >
                       {pname} x {product.quantity}
@@ -103,19 +130,10 @@ function Order() {
             <div className="order-address">
               {order.address ? (
                 <>
-                  <p>
-                    <strong>Name:</strong> {order.address.name}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {order.address.street},{' '}
-                    {order.address.city}
-                  </p>
-                  <p>
-                    <strong>Phone:</strong> {order.address.phoneNumber}
-                  </p>
-                  <p>
-                    <strong>Pincode:</strong> {order.address.pincode}
-                  </p>
+                  <p><strong>Name:</strong> {order.address.name}</p>
+                  <p><strong>Address:</strong> {order.address.street}, {order.address.city}</p>
+                  <p><strong>Phone:</strong> {order.address.phoneNumber}</p>
+                  <p><strong>Pincode:</strong> {order.address.pincode}</p>
                 </>
               ) : (
                 <p>Shipping address not available.</p>
@@ -125,28 +143,11 @@ function Order() {
             <div className="order-status">
               <p>
                 <strong>Status:</strong>{' '}
-                <span className={`status-${String(order.status).toLowerCase()}`}>
+                <span className={`status-${String(order.status).toLowerCase().replaceAll(' ', '-')}`}>
                   {order.status}
                 </span>
               </p>
-              {order.status !== 'Cancelled' && (
-                <>
-                  <button
-                    onClick={() => handleStatusChange(order._id, 'Order Ready')}
-                    className="status-button"
-                  >
-                    Mark as Ready
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleStatusChange(order._id, 'Order Delivered')
-                    }
-                    className="status-button"
-                  >
-                    Mark as Delivered
-                  </button>
-                </>
-              )}
+              {renderAction(order)}
             </div>
           </div>
         ))
