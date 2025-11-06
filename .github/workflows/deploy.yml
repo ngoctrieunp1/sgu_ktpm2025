@@ -2,7 +2,7 @@ name: CI/CD for SGU_KTPM2025
 
 on:
   push:
-    branches: [ CNPM ]   # Mỗi khi bạn push code lên nhánh main, pipeline sẽ tự chạy
+    branches: [ main ]   # Mỗi khi bạn push code lên nhánh main, pipeline sẽ tự chạy
 
 jobs:
   build_and_push:
