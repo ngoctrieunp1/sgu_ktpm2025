@@ -1,20 +1,43 @@
-# Node.js + Express (có bcrypt)
-FROM node:20-alpine
+# # Node.js + Express (có bcrypt)
+# FROM node:20-alpine
 
-# Toolchain để build native modules (bcrypt)
-RUN apk add --no-cache python3 make g++
+# # Toolchain để build native modules (bcrypt)
+# RUN apk add --no-cache python3 make g++
 
+# WORKDIR /app
+
+# # Cài deps trước để tận dụng cache
+# COPY package*.json ./
+# RUN npm ci --legacy-peer-deps
+
+# # Chép source
+# COPY . .
+
+# ENV NODE_ENV=development
+# ENV PORT=4000
+
+# EXPOSE 4000
+# CMD ["npm", "start"]
+
+
+
+# ---- deps/build stage (build bcrypt) ----
+FROM node:20-alpine AS deps
 WORKDIR /app
-
-# Cài deps trước để tận dụng cache
+RUN apk add --no-cache python3 make g++
 COPY package*.json ./
-RUN npm ci --legacy-peer-deps
+# chỉ cài deps production; nếu cần có thể thêm --legacy-peer-deps
+RUN npm ci --omit=dev
 
-# Chép source
-COPY . .
+# ---- runtime stage (gọn, không toolchain) ----
+FROM node:20-alpine AS runner
+ENV NODE_ENV=production
+WORKDIR /app
+USER node
 
-ENV NODE_ENV=development
-ENV PORT=4000
+COPY --chown=node:node --from=deps /app/node_modules ./node_modules
+COPY --chown=node:node . .
 
 EXPOSE 4000
-CMD ["npm", "start"]
+# nếu "start" của bạn đã là `node Server.js` thì cũng OK giữ npm start
+CMD ["node", "Server.js"]

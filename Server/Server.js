@@ -20,8 +20,23 @@ app.use("/", userRoutes);
 app.use("/", CartRoutes);
 app.use("/", orderRoutes);
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+}); // chỉnh backend docker
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Backend server is running successfully 🚀",
+    healthcheck: "/health",
+  });
+});
+
+// Khởi chạy server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, (err) => {
-  if (err) process.exit(1);
-  console.log("server is running");
+  if (err) {
+    console.error("❌ Server failed to start:", err);
+    process.exit(1);
+  }
+  console.log(`✅ Server is running on port ${PORT}`);
 });
