@@ -1,10 +1,10 @@
-# node_modules
-
-
-
 node_modules
-.git
-coverage
-build
-dist
-*.log
+
+
+
+# node_modules
+# .git
+# coverage
+# build
+# dist
+# *.log

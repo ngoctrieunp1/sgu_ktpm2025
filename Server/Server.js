@@ -20,16 +20,16 @@ app.use("/", userRoutes);
 app.use("/", CartRoutes);
 app.use("/", orderRoutes);
 
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
-}); // chỉnh backend docker
+// app.get("/health", (req, res) => {
+//   res.status(200).json({ status: "ok" });
+// }); // chỉnh backend docker
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    message: "Backend server is running successfully 🚀",
-    healthcheck: "/health",
-  });
-});
+// app.get("/", (req, res) => {
+//   res.status(200).json({
+//     message: "Backend server is running successfully 🚀",
+//     healthcheck: "/health",
+//   });
+// });
 
 // Khởi chạy server
 const PORT = process.env.PORT || 4000;
