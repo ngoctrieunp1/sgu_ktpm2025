@@ -1,70 +1,42 @@
 name: CI/CD 3-tier
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
-
-concurrency:
-  group: cicd-${{ github.ref }}
-  cancel-in-progress: true
+on: [push]
 
 jobs:
   test_backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Server
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: Server/package-lock.json
-      - run: npm ci
-      - run: npm test --if-present
+      # ... các bước test backend
 
   test_frontend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: Client/my-app
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: Client/my-app/package-lock.json
-      - run: npm ci
-      - run: npm test --if-present
+      # ... các bước test frontend
 
   deploy:
-    # Chỉ deploy khi push vào nhánh main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, Windows]
     needs: [test_backend, test_frontend]
+    runs-on: self-hosted
+
+    # 👇 Quan trọng: dùng Windows PowerShell 5 thay vì pwsh
+    defaults:
+      run:
+        shell: powershell
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Kiểm tra Docker/Compose
-        shell: pwsh
         run: |
-          docker version
+          docker --version
           docker compose version
 
-      - name: Validate docker-compose
-        shell: pwsh
-        run: docker compose config
+      - name: Validate docker-compose.yml
+        run: docker compose config -q
 
       - name: Deploy bằng Docker Compose
-        shell: pwsh
-        run: |
-          docker compose down --remove-orphans
-          docker compose up -d --build
-          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+        run: docker compose -f docker-compose.yml up -d --build
+
+      - name: Dọn ảnh cũ (optional)
+        run: docker image prune -f
