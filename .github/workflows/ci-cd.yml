@@ -57,7 +57,7 @@ name: CI/CD 3-tier
 
 on:
   push:
-    branches: [ main ]   # đổi nếu bạn muốn
+    branches: [ main ]
 
 jobs:
   test_backend:
@@ -66,38 +66,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: '20' }
+        with: { node-version: '20' }   # nếu còn lỗi, đổi '18'
+      - name: Show Node/NPM
+        run: |
+          node -v
+          npm -v
+        working-directory: Server
       - name: Install deps
-        run: npm ci || npm install
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
         working-directory: Server
       - name: Run unit tests
-        env:
-          NODE_ENV: test
+        env: { NODE_ENV: test }
         run: npm test
         working-directory: Server
 
   deploy:
-    needs: [test_backend]          # ✅ chỉ phụ thuộc backend test
+    needs: [test_backend]
     runs-on: self-hosted
     if: github.ref == 'refs/heads/main'
-
     defaults:
-      run:
-        shell: powershell          # dùng Windows PowerShell 5
-
+      run: { shell: powershell }
     steps:
       - uses: actions/checkout@v4
-
       - name: Kiểm tra Docker/Compose
         run: |
           docker --version
           docker compose version
-
       - name: Validate docker-compose.yml
         run: docker compose config -q
-
       - name: Deploy bằng Docker Compose
         run: docker compose -f docker-compose.yml up -d --build
-
       - name: Dọn ảnh cũ (optional)
         run: docker image prune -f
