@@ -41,9 +41,9 @@
 name: Build & Push (after CI)
 
 on:
-  # Tự động chạy khi workflow "CI/CD 3-tier" hoàn tất và PASS
+  # Tự động chạy sau khi workflow "CI/CD 3-tier" kết thúc
   workflow_run:
-    workflows: ["CI/CD 3-tier"]
+    workflows: ["CI/CD 3-tier"]   # phải khớp 100% với tên trong ci-cd.yml
     types: [completed]
 
   # Cho phép chạy thủ công
@@ -51,7 +51,7 @@ on:
 
 jobs:
   build_and_push:
-    # Chỉ chạy nếu CI ở trên pass hoặc bạn bấm tay
+    # Chỉ chạy nếu CI pass hoặc bạn bấm tay
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
@@ -81,3 +81,42 @@ jobs:
           context: ./Client/my-app
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sgu_frontend:latest
+
+  deploy:
+    name: Deploy (self-hosted Windows)
+    needs: [build_and_push]
+    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login Docker Hub
+        run: docker login -u $env:DOCKERHUB_USERNAME -p $env:DOCKERHUB_TOKEN
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Check Docker versions
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Pull images from Docker Hub
+        run: |
+          docker pull $env:DOCKERHUB_USERNAME/sgu_backend:latest
+          docker pull $env:DOCKERHUB_USERNAME/sgu_frontend:latest
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
+      - name: Validate docker-compose.yml
+        run: docker compose -f docker-compose.yml config -q
+
+      - name: Up services
+        run: docker compose -f docker-compose.yml up -d
+
+      - name: Prune old images (optional)
+        run: docker image prune -f

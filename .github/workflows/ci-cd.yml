@@ -57,7 +57,7 @@ name: CI/CD 3-tier
 
 on:
   push:
-    branches: [ main ]   # chỉ chạy khi push lên nhánh main
+    branches: [ main ]   # chạy khi push lên main
 
 jobs:
   test_backend:
@@ -68,7 +68,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'   # nếu cần, đổi thành '18'
+          node-version: '18'     # khớp máy bạn; đổi '20' nếu muốn
 
       - name: Show Node/NPM version
         run: |
@@ -86,28 +86,3 @@ jobs:
         run: npm test
         working-directory: Server
 
-  deploy:
-    name: Deploy (self-hosted Windows)
-    needs: [test_backend]
-    runs-on: self-hosted
-    if: github.ref == 'refs/heads/main'
-    defaults:
-      run:
-        shell: powershell
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Kiểm tra Docker/Compose
-        run: |
-          docker --version
-          docker compose version
-
-      - name: Validate docker-compose.yml
-        run: docker compose config -q
-
-      - name: Deploy bằng Docker Compose
-        run: docker compose -f docker-compose.yml up -d --build
-
-      - name: Dọn ảnh cũ (optional)
-        run: docker image prune -f
