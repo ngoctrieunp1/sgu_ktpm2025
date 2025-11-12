@@ -1,28 +1,89 @@
+# name: CI/CD 3-tier
+
+# on: [push]
+
+# jobs:
+#   # test_backend:
+#   #   runs-on: ubuntu-latest
+#   #   steps:
+#   #     - uses: actions/checkout@v4
+#   #     # ... các bước test backend
+
+#   test_backend:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - uses: actions/setup-node@v4
+#         with: { node-version: '20' }   # CI chạy Node 20 ok
+#       - run: npm ci
+#         working-directory: Server
+#       - run: npm test
+#         working-directory: Server
+
+#   test_frontend:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       # ... các bước test frontend
+
+#   deploy:
+#     needs: [test_backend, test_frontend]
+#     runs-on: self-hosted
+
+#     # 👇 Quan trọng: dùng Windows PowerShell 5 thay vì pwsh
+#     defaults:
+#       run:
+#         shell: powershell
+
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - name: Kiểm tra Docker/Compose
+#         run: |
+#           docker --version
+#           docker compose version
+
+#       - name: Validate docker-compose.yml
+#         run: docker compose config -q
+
+#       - name: Deploy bằng Docker Compose
+#         run: docker compose -f docker-compose.yml up -d --build
+
+#       - name: Dọn ảnh cũ (optional)
+#         run: docker image prune -f
+
+
 name: CI/CD 3-tier
 
-on: [push]
+on:
+  push:
+    branches: [ main ]   # đổi nếu bạn muốn
 
 jobs:
   test_backend:
     runs-on: ubuntu-latest
+    if: ${{ hashFiles('Server/**') != '' }}
     steps:
       - uses: actions/checkout@v4
-      # ... các bước test backend
-
-  test_frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      # ... các bước test frontend
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Install deps
+        run: npm ci || npm install
+        working-directory: Server
+      - name: Run unit tests
+        env:
+          NODE_ENV: test
+        run: npm test
+        working-directory: Server
 
   deploy:
-    needs: [test_backend, test_frontend]
+    needs: [test_backend]          # ✅ chỉ phụ thuộc backend test
     runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
 
-    # 👇 Quan trọng: dùng Windows PowerShell 5 thay vì pwsh
     defaults:
       run:
-        shell: powershell
+        shell: powershell          # dùng Windows PowerShell 5
 
     steps:
       - uses: actions/checkout@v4
