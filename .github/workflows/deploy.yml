@@ -41,7 +41,7 @@
 name: Build & Push (after CI)
 
 on:
-  # Tự động khi CI/CD 3-tier chạy xong và PASS
+  # Tự động chạy khi workflow "CI/CD 3-tier" hoàn tất và PASS
   workflow_run:
     workflows: ["CI/CD 3-tier"]
     types: [completed]
@@ -51,18 +51,18 @@ on:
 
 jobs:
   build_and_push:
-    # Chỉ chạy nếu CI pass hoặc bạn bấm thủ công
+    # Chỉ chạy nếu CI ở trên pass hoặc bạn bấm tay
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
+      - name: Login Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -81,21 +81,3 @@ jobs:
           context: ./Client/my-app
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/sgu_frontend:latest
-
-  deploy:
-    name: Deploy (self-hosted Windows)
-    needs: [build_and_push]
-    runs-on: self-hosted
-    if: github.ref == 'refs/heads/main'
-    defaults:
-      run:
-        shell: powershell
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Pull & Up Docker Compose
-        run: |
-          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker compose -f docker-compose.yml pull
-          docker compose -f docker-compose.yml up -d
-          docker image prune -f
