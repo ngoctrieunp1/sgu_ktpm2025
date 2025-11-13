@@ -1,34 +1,40 @@
-// loadtest.js
-// Script giả lập 50 API request tuần tự – không cần API thật
+const axios = require("axios");
 
-function randomDelay(min = 100, max = 600) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+const URL = "https://sgu-ktpm2025.onrender.com/health";  // ✅ endpoint chắc chắn đúng
 
 function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fakeRequest(index) {
-  const latency = randomDelay();        // thời gian phản hồi giả lập
-  const isError = Math.random() < 0.1;  // 10% tỉ lệ lỗi
+async function hitApi(index) {
+  const start = Date.now();
 
-  await wait(latency);
+  try {
+    const res = await axios.get(URL);
+    const time = Date.now() - start;
 
-  if (isError) {
-    console.log(`#${index} ❌ ERROR | ${latency}ms`);
-  } else {
-    console.log(`#${index} ✅ 200 OK | ${latency}ms`);
+    console.log(
+      `#${index.toString().padStart(2, "0")} ✅ ${res.status} | ${time}ms`
+    );
+  } catch (err) {
+    const time = Date.now() - start;
+    const status = err.response?.status || "NO_RESPONSE";
+
+    console.log(
+      `#${index.toString().padStart(2, "0")} ❌ ERROR ${status} | ${time}ms`
+    );
   }
 }
 
 (async () => {
-  console.log("🔰 BẮT ĐẦU GIẢ LẬP 50 REQUEST...\n");
+  console.log("🔰 BẮT ĐẦU LOAD TEST 50 REQUEST THẬT...\n");
 
-  for (let i = 1; i <= 500; i++) {
-    await fakeRequest(i);
-    await wait(200); // delay giữa các request → giống hệ thống thật hơn
+  const total = 50;
+
+  for (let i = 1; i <= total; i++) {
+    await hitApi(i);
+    await wait(200);
   }
 
-  console.log("\n🏁 HOÀN THÀNH GIẢ LẬP!");
+  console.log("\n🏁 HOÀN THÀNH LOAD TEST!");
 })();
