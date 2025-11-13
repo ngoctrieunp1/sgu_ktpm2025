@@ -71,7 +71,15 @@ describe('Integration: Products public endpoints', () => {
     const res = await request(app).get(`/product/${productA._id}`);
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('_id', productA._id.toString());
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cái này là test đúng
     expect(res.body).toHaveProperty('name', 'Pho Bo');
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// cái này là test sai
+    // expect(res.body).toHaveProperty('name', 'Pho Ga');
+// Lý do: API thật trả về "Pho Bo", nhưng test lại đòi "Pho Ga" → Jest sẽ báo fail test này.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   });
 
   it('GET /searchproduct?search=banh -> 200 matched list', async () => {
@@ -90,3 +98,4 @@ describe('Integration: Products public endpoints', () => {
     expect(count).toBeGreaterThanOrEqual(2);
   });
 });
+// test trigger
