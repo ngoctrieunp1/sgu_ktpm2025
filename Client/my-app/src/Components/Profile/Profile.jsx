@@ -55,7 +55,7 @@ function Profile() {
       return;
     }
     try {
-      const res = await axios.get(`${API}/getDeliveredOrders`, {
+      const res = await axios.get(`${API_URL}/getDeliveredOrders`, {
         params: {
           restaurantId: effectiveId,
           startDate,
