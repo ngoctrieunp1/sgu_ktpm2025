@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../../../Components/SingleView/SingleView.css'; // Make sure to import the CSS file
-
+import { API_BASE_URL } from '../../../config';
 function Singleviews() {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -10,7 +10,7 @@ function Singleviews() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/product/${id}`)
+        axios.get(`${API_BASE_URL}/product/${id}`)
             .then((response) => {
                 setProduct(response.data);
                 setLoading(false);

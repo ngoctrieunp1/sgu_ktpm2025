@@ -4,8 +4,9 @@ import { useParams, Link } from "react-router-dom";
 import "./Profile.css";
 import edit1 from "../../Pages/HotelPages/icons8-edit-25 (1).png";
 import { Context } from "../../Context/Context";
+import { API_BASE_URL } from "../../config";
 
-const API = "http://localhost:4000";
+const API_URL = API_BASE_URL || "http://localhost:4000";
 
 function Profile() {
   const { id } = useParams();

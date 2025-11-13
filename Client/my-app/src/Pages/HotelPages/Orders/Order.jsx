@@ -3,8 +3,9 @@ import axios from 'axios';
 import { Context } from '../../../Context/Context';
 import parcels from '../../../Assets/admin_assets/parcel_icon.png';
 import './Order.css';
+import { API_BASE_URL } from '../../../config';
 
-const API_URL = 'http://localhost:4000';
+const API_URL = API_BASE_URL || "http://localhost:4000";
 
 // Restaurant được phép chuyển:
 // - Payment completed -> Order is being prepared

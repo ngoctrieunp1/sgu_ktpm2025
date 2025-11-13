@@ -3,7 +3,7 @@ import './Add.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-
+import { API_BASE_URL } from '../../../config';
 function Add() {
     const navigate = useNavigate();
     const [product, setProduct] = useState({
@@ -20,7 +20,7 @@ function Add() {
     };
 
     const handleUpdate = () => {
-        axios.post("http://localhost:4000/create", product, {
+        axios.post(`${API_BASE_URL}/create`, product, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

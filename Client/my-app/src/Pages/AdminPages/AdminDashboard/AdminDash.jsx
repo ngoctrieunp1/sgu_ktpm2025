@@ -3,6 +3,7 @@ import "./AdminDash.css"
 import { FaUtensils, FaDollarSign, FaMapMarkerAlt, FaMotorcycle, FaClock, FaUsers, FaRoute } from 'react-icons/fa';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from "../../../config";
 const AdminDash = () => {
   const Navigate=useNavigate()
     const [users, setusers] = useState(0)
@@ -12,32 +13,32 @@ const AdminDash = () => {
     const [totalTurnover, setTotalTurnover] = useState(0);
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/usercount`).then((res)=>{
+        axios.get(`${API_BASE_URL}/usercount`).then((res)=>{
             console.log('res',res);
           
           setusers(res.data.count);
           }).catch((err)=>{
             console.log(err);
           })
-          axios.get("http://localhost:4000/productcount").then((res)=>{
+          axios.get(`${API_BASE_URL}/productcount`).then((res)=>{
             console.log(res);
             setproducts(res.data.count)
           }).catch((err)=>{
             console.log(err)
           })
-          axios.get("http://localhost:4000/rescount").then((res)=>{
+          axios.get(`${API_BASE_URL}/rescount`).then((res)=>{
             console.log(res);
             setres(res.data.count);
           }).catch((err)=>{
             console.log(err)
           })
-          axios.get("http://localhost:4000/Ordercount").then((res)=>{
+          axios.get(`${API_BASE_URL}/Ordercount`).then((res)=>{
             console.log(res);
             settotalOrder(res.data.count);
           }).catch((err)=>{
             console.log(err)
           })
-          axios.get("http://localhost:4000/turnover").then((res) => {
+          axios.get(`${API_BASE_URL}/turnover`).then((res) => {
             setTotalTurnover(res.data.turnover);
         }).catch((err) => console.log(err));
     }, [])

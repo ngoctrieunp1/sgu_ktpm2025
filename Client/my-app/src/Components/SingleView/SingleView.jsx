@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import './SingleView.css';
 import { Context } from '../../Context/Context';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from "../../config";
 
 function SingleView() {
     const [rating, setRating] = useState(0);
@@ -31,7 +32,7 @@ function SingleView() {
                 return;
             }
     
-            await axios.post(`http://localhost:4000/product/${id}/reviews`, 
+            await axios.post(`${API_BASE_URL}/product/${id}/reviews`, 
                 { rating, comment },
                 {
                     headers: {
@@ -57,7 +58,7 @@ function SingleView() {
 
     const fetchReviews = async () => {
         try {
-            const response = await axios.get(`http://localhost:4000/product/getReviews/${id}`, {
+            const response = await axios.get(`${API_BASE_URL}/product/getReviews/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -77,7 +78,7 @@ function SingleView() {
     }, [id]);
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/product/${id}`)
+        axios.get(`${API_BASE_URL}/product/${id}`)
             .then((response) => {
                 setProduct(response.data);
                 setLoading(false);

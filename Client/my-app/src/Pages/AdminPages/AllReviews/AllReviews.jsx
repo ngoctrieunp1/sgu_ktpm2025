@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import './AllReviews.css';
+import { API_BASE_URL } from "../../../config";
 
 function AllReviews() {
   const [products, setProducts] = useState([]);
@@ -8,7 +9,7 @@ function AllReviews() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:4000/getallreviews')
+    axios.get(`${API_BASE_URL}/getallreviews`)
       .then((res) => {
         console.log(res);
         setProducts(res.data.reverse()); // Reverse the product array for LIFO

@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../../../Components/SingleView/SingleView.css'; // Ensure you have the necessary styles
+import { API_BASE_URL } from '../../../config';
 
 function ReviewSingleView() {
     const { id } = useParams();
@@ -12,7 +13,7 @@ function ReviewSingleView() {
     const token = localStorage.getItem('token');
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/product/getReviews/${id}`, {
+        axios.get(`${API_BASE_URL}/product/getReviews/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'

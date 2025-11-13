@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import './Viewupdate.css';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../../config';
 
 function Viewupdate() {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ function Viewupdate() {
     };
 
     useEffect(() => {
-        axios.get(`http://localhost:4000/getproducts/${id}`)
+        axios.get(`${API_BASE_URL}/getproducts/${id}`)
             .then((res) => {
                 setProduct(res.data);
             })
@@ -31,7 +32,7 @@ function Viewupdate() {
     }, [id]);
 
     const handleUpdate = () => {
-        axios.put(`http://localhost:4000/update/${id}`, product, {
+        axios.put(`${API_BASE_URL}/update/${id}`, product, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

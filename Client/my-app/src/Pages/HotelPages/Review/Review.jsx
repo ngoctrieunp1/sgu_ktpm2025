@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import '../../../Components/FoodItem/FoodItem.css'; // Ensure this CSS file has styles for cart items
+import { API_BASE_URL } from '../../../config';
 
 function Review() {
     const [products, setProducts] = useState([]);
@@ -15,7 +16,7 @@ function Review() {
 
     const fetchProductsWithReviews = async () => {
         try {
-            const response = await axios.get('http://localhost:4000/restaurant/products-with-reviews', {
+            const response = await axios.get(`${API_BASE_URL}/restaurant/products-with-reviews`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'

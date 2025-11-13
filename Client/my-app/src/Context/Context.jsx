@@ -3,6 +3,7 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { API_BASE_URL } from "../config";
 
 export const Context = createContext({ isAuthorized: false });
 
@@ -42,7 +43,7 @@ const ContextProvider = (props) => {
   useEffect(() => {
     if (userId) {
       axios
-        .get(`http://localhost:4000/cart/${userId}`)
+        .get(`${API_BASE_URL}/cart/${userId}`)
         .then((res) => {
           const cartData = res.data.reduce((acc, item) => {
             acc[item.itemId] = item.quantity;
@@ -60,7 +61,7 @@ const ContextProvider = (props) => {
       newCart[itemId] = (newCart[itemId] || 0) + 1;
 
       axios
-        .post("http://localhost:4000/addCart", {
+        .post("${API_BASE_URL}/addCart", {
           itemId,
           quantity: 1,
           userId,
@@ -79,7 +80,7 @@ const ContextProvider = (props) => {
       else delete newCart[itemId];
 
       axios
-        .post(`http://localhost:4000/remove/${itemId}`, { itemId, userId, quantity })
+        .post(`${API_BASE_URL}/remove/${itemId}`, { itemId, userId, quantity })
         .then(() => toast.success("Removed item from cart!"))
         .catch((err) => console.log(err));
 
@@ -94,7 +95,7 @@ const ContextProvider = (props) => {
         const newQuantity = item.quantity + 1;
         item.quantity = newQuantity;
         setCartItems([...cartItems]);
-        await axios.post(`http://localhost:4000/cart/update/${itemId}`, {
+        await axios.post(`${API_BASE_URL}/cart/update/${itemId}`, {
           userId,
           quantity: newQuantity,
         });
@@ -111,13 +112,13 @@ const ContextProvider = (props) => {
         const newQuantity = item.quantity - 1;
         item.quantity = newQuantity;
         setCartItems([...cartItems]);
-        await axios.post(`http://localhost:4000/cart/decrement/${itemId}`, {
+        await axios.post(`${API_BASE_URL}/cart/decrement/${itemId}`, {
           userId,
           quantity: newQuantity,
         });
       } else if (item && item.quantity === 1) {
         setCartItems(cartItems.filter((i) => i.itemId !== itemId));
-        await axios.post(`http://localhost:4000/remove/${itemId}`, { userId });
+        await axios.post(`${API_BASE_URL}/remove/${itemId}`, { userId });
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);

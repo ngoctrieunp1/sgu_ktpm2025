@@ -3,6 +3,7 @@ import '../Cart/Cart.css';
 import { Context } from '../../../Context/Context';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from '../../../config';
 
 function Cart() {
   const { cartItems, setCartItems, view, userId, setview, removCart, getTotalPrice, handleIncrement, handleDecrement } = useContext(Context);
@@ -11,7 +12,7 @@ function Cart() {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/cart/${userId}`);
+        const response = await axios.get(`${API_BASE_URL}/cart/${userId}`);
         setCartItems(response.data);
       } catch (error) {
         console.error('Error fetching cart items:', error);
@@ -25,7 +26,7 @@ function Cart() {
       const itemIds = cartItems.map(item => item.itemId);
       if (itemIds.length > 0) {
         try {
-          const responses = await Promise.all(itemIds.map(itemId => axios.get(`http://localhost:4000/item/${itemId}`)));
+          const responses = await Promise.all(itemIds.map(itemId => axios.get(`${API_BASE_URL}/item/${itemId}`)));
           const items = responses.map(response => response.data);
           setview(items);
         } catch (error) {

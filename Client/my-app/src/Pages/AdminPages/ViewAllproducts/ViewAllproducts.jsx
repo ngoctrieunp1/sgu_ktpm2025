@@ -6,12 +6,13 @@ import { MdDelete } from "react-icons/md";
 import { IoMdEye } from "react-icons/io";
 import { GiSightDisabled } from "react-icons/gi";
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../../config';
 function ViewAllproducts() {
   const [view, setview] = useState([])
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get("http://localhost:4000/view").then((res)=>{
+    axios.get(`${API_BASE_URL}/view`).then((res)=>{
       console.log(res);
       setview(res.data)
     }).catch((err)=>{
@@ -21,7 +22,7 @@ function ViewAllproducts() {
   }, [])
 
   const remove=(id)=>{
-    axios.delete(`http://localhost:4000/remove/${id}`,{
+    axios.delete(`${API_BASE_URL}/remove/${id}`,{
       headers: {
           'Authorization': `Bearer ${token}`
       }
@@ -37,7 +38,7 @@ function ViewAllproducts() {
 
 const toggleproductstatus = async (id, currentstatus) => {
   try {
-      const res = await axios.patch(`http://localhost:4000/toggleproduct/${id}`);
+      const res = await axios.patch(`${API_BASE_URL}/toggleproduct/${id}`);
       if (res.status === 200) {
         toast.success(res.data.message)
           setview((prevproducts) =>

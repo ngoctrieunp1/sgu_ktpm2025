@@ -2,8 +2,9 @@ import axios from 'axios';
 import React, { useEffect, useState, useCallback } from 'react';
 import './AllOrders.css';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from "../../../config";
 
-const API_URL = 'http://localhost:4000';
+const API_URL = API_BASE_URL || "http://localhost:4000";
 
 function AllOrders() {
   const [orders, setOrders] = useState([]);

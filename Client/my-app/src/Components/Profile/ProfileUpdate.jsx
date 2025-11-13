@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { Context } from '../../Context/Context'
 import toast from 'react-hot-toast'
+import { API_BASE_URL } from "../../config";
 function ProfileUpdate() {
     const {userId }=useContext(Context)
     const Navigate=useNavigate()
@@ -13,7 +14,7 @@ function ProfileUpdate() {
         setprofileUpdate({...profileUpdate,[e.target.name]: e.target.value})  
     }
     useEffect(() => {
-        axios.get("http://localhost:4000/proview/"+id).then((res)=>{
+        axios.get(`${API_BASE_URL}/proview/${id}`).then((res)=>{
           console.log(res);
           setprofileUpdate(res.data)
         }).catch((err)=>{
@@ -22,7 +23,7 @@ function ProfileUpdate() {
         
       }, [])
       const handleupdate=()=>{
-        axios.put("http://localhost:4000/updateprofile/"+id,profileUpdate).then((res)=>{
+        axios.put(`${API_BASE_URL}/updateprofile/${id}`, profileUpdate).then((res)=>{
             console.log(res);
             toast.success('Profile updated successfully!')
             Navigate(`/profile/${userId}`)

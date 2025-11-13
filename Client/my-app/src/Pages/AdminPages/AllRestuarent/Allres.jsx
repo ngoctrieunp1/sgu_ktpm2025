@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Context } from '../../../Context/Context';
 import axios from 'axios';
-
+import { API_BASE_URL } from "../../../config";
 
 import blockuser from './download (1).png'
 import { TfiLock } from "react-icons/tfi";
@@ -14,7 +14,7 @@ function Allres() {
   const token = localStorage.getItem('token');
   useEffect(() => {
    
-  axios.get(`http://localhost:4000/Allres`).then((res)=>{
+  axios.get(`${API_BASE_URL}/Allres`).then((res)=>{
     console.log('res',res);
   
     setProfiles(res.data)
@@ -26,7 +26,7 @@ function Allres() {
 
 
 const handleblock = (userId) => {
-  axios.put(`http://localhost:4000/block/${userId}`, {}, {
+  axios.put(`${API_BASE_URL}/block/${userId}`, {}, {
     headers: {
       'Authorization':` Bearer ${token}`
     }
@@ -46,7 +46,7 @@ const handleblock = (userId) => {
 };
 
 const handleunblock = (userId) => {
-  axios.put(`http://localhost:4000/unblock/${userId}`).then((res) => {
+  axios.put(`${API_BASE_URL}/unblock/${userId}`).then((res) => {
     const updatedProfiles = profiles.map(profile => {
       if (profile._id === userId) {
         return { ...profile, blocked: false };

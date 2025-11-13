@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import './List.css';
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../../../config';
 
 function List() {
   const [view, setView] = useState([]);
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get("http://localhost:4000/view", {
+    axios.get(`${API_BASE_URL}/view`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }

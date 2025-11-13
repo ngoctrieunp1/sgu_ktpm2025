@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
 import { Context } from '../../Context/Context';
 import './SearchProduct.css';
+import { API_BASE_URL } from "../../config";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -22,7 +23,7 @@ function SearchProduct() {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/searchproduct`, {
+        const response = await axios.get(`${API_BASE_URL}/searchproduct`, {
           params: {
             q: query,
             category: category || undefined,

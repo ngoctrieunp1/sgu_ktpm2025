@@ -4,6 +4,7 @@ import { Context } from '../../../Context/Context';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { API_BASE_URL } from '../../../config';
 
 function PlaceOrder() {
   const { getTotalPrice, cartItems, userId, token, setCartItems } = useContext(Context);
@@ -46,7 +47,7 @@ const handlePayment = async (e) => {
     };
 
     // Gọi API backend
-    const resp = await axios.post("http://localhost:4000/placeorder-split", orderDetails);
+    const resp = await axios.post(`${API_BASE_URL}/placeorder-split`, orderDetails);
 
     // Nếu backend trả {orders: [...]}
     const orders = resp.data?.orders || resp.data; // fallback nếu BE trả mảng
@@ -55,7 +56,7 @@ const handlePayment = async (e) => {
     toast.success(`Tạo ${count} đơn hàng thành công!`);
 
     // Xóa giỏ hàng
-    await axios.delete(`http://localhost:4000/cart/clear/${userId}`);
+    await axios.delete(`${API_BASE_URL}/cart/clear/${userId}`);
     setCartItems([]);
 
     // Chuyển sang trang My Orders

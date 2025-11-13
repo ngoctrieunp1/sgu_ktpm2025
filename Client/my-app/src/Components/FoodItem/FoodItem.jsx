@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../config";
 import React, { useContext, useEffect, useState } from 'react';
 import './FoodItem.css';
 import axios from 'axios';
@@ -9,7 +10,8 @@ function FoodItem() {
   const { addCart } = useContext(Context);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/view")
+    axios
+      .get(`${API_BASE_URL}/view`)
       .then((res) => {
         const activeProduct = res.data.filter((disps) => !disps.disabled);
         setView(activeProduct);
@@ -26,8 +28,12 @@ function FoodItem() {
         {view.slice().reverse().map((disp) => (  // Reverse the view array to display items in LIFO order
           <div className='food-item' key={disp._id}>
             <div className="food-item-container">
-              <Link to={`/product/${disp._id}`}><img src={disp.image} alt="" className='food-item-img' /></Link>
-              <button onClick={() => addCart(disp._id)} className='carttt'>Add to Cart</button>
+              <Link to={`/product/${disp._id}`}>
+                <img src={disp.image} alt="" className='food-item-img' />
+              </Link>
+              <button onClick={() => addCart(disp._id)} className='carttt'>
+                Add to Cart
+              </button>
             </div>
             <div className="food-item-info">
               <div className="food-item-name-rating">
@@ -35,7 +41,6 @@ function FoodItem() {
               </div>
               <p className='food-item-descrip'>{disp.description}</p>
               <p className='food-item-price'>${disp.price}</p>
-              <div></div>
             </div>
           </div>
         ))}
@@ -45,4 +50,3 @@ function FoodItem() {
 }
 
 export default FoodItem;
-
