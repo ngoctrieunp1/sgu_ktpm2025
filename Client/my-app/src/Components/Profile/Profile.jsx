@@ -27,13 +27,13 @@ function Profile() {
     async function fetchProfile() {
       setLoading(true);
       try {
-        const r1 = await axios.get(`${API}/profile/${effectiveId}`, {
+        const r1 = await axios.get(`${API_URL}/profile/${effectiveId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
         setProfile(r1.data);
       } catch (e1) {
         try {
-          const r2 = await axios.get(`${API}/proview/${effectiveId}`, {
+          const r2 = await axios.get(`${API_URL}/proview/${effectiveId}`, {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
           });
           setProfile(r2.data);
