@@ -61,7 +61,7 @@ const ContextProvider = (props) => {
       newCart[itemId] = (newCart[itemId] || 0) + 1;
 
       axios
-        .post('${API_BASE_URL}/addCart', {
+        .post(`${API_BASE_URL}/addCart`, {
           itemId,
           quantity: 1,
           userId,
