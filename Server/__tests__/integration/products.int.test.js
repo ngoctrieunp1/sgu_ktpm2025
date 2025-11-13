@@ -98,4 +98,4 @@ describe('Integration: Products public endpoints', () => {
     expect(count).toBeGreaterThanOrEqual(2);
   });
 });
-// test trigger
+// test trigger 1
