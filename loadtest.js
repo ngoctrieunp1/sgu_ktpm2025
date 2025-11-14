@@ -38,3 +38,4 @@ async function hitApi(index) {
 
   console.log("\n🏁 HOÀN THÀNH LOAD TEST!");
 })();
+// tétts
