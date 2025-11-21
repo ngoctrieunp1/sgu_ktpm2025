@@ -48,6 +48,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const morgan = require("morgan");          // 👈 THÊM DÒNG NÀY
 
 // Load biến môi trường từ file .env (nếu có)
 dotenv.config();
@@ -78,6 +79,9 @@ app.use(
 );
 
 app.use(express.json());
+
+// 👇 THÊM LOG REQUEST Ở ĐÂY
+app.use(morgan("dev")); // log dạng: "GET /health 200 15ms - 50"
 
 // ----------------------------
 //  ROUTES
