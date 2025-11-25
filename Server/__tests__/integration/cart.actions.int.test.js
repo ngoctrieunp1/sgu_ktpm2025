@@ -1,78 +1,90 @@
+const express = require('express');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const express = require('express');
 
-const CartRoutes = require('../../Routes/Cart.route');
-const Product = require('../../Models/Product.model');
-const User = require('../../Models/User.model');
+const productModel = require('../../models/productModels');
+const userModel = require('../../models/UserModels');
+const cartRoutes = require('../../Routers/CartRoutes');
 
-let app, mongoServer, user, product;
+describe('Integration: Cart extra actions', () => {
+  let app;
+  let mongo, userId, product;
 
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  await mongoose.connect(mongoServer.getUri(), { dbName: 'testDB' });
+  beforeAll(async () => {
+    mongo = await MongoMemoryServer.create();
+    const uri = mongo.getUri();
+    await mongoose.connect(uri);
 
-  app = express();
-  app.use(express.json());
-  app.use(CartRoutes);
+    const user = await userModel.create({
+      name: 'Cart User',
+      email: 'cart@example.com',
+      password: 'hashed',
+      role: 'user',
+    });
+    userId = user._id;
 
-  user = await User.create({
-    name: 'Cart User',
-    email: 'cart@example.com',
-    password: '123456',
-    role: 'user'
+    product = await productModel.create({
+      name: 'Pizza',
+      restaurantId: userId,
+      price: 100000,
+      category: 'Fastfood',
+      image: 'pizza.jpg',
+      description: 'Pizza test',
+      postedBy: userId,
+    });
+
+    app = express();
+    app.use(express.json());
+    app.use(cartRoutes);
   });
 
-  product = await Product.create({
-    name: 'Pizza',
-    price: 10,
-    restaurantId: user._id,
-    postedBy: user._id
-  });
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
-describe('Cart Additional Actions - Integration Test', () => {
-
-  let itemId;
-
-  it('POST /addCart should add item to cart', async () => {
-    const res = await request(app)
-      .post('/addCart')
-      .send({ itemId: product._id, userId: user._id, quantity: 2 });
-
-    expect(res.status).toBe(200);
-    itemId = res.body._id;
+  afterAll(async () => {
+    await mongoose.connection.dropDatabase();
+    await mongoose.connection.close();
+    await mongo.stop();
   });
 
   it('POST /cart/update/:itemId should update quantity', async () => {
+    // đảm bảo cart có item trước
+    await request(app)
+      .post('/addCart')
+      .send({ itemId: product._id, userId, quantity: 1 });
+
     const res = await request(app)
-      .post(`/cart/update/${itemId}`)
-      .send({ quantity: 5 });
+      .post(`/cart/update/${product._id}`)
+      .send({ userId, quantity: 5 });
 
     expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('message', 'Cart updated successfully');
   });
 
   it('POST /cart/decrement/:itemId should decrement quantity', async () => {
+    await request(app)
+      .post('/addCart')
+      .send({ itemId: product._id, userId, quantity: 5 });
+
     const res = await request(app)
-      .post(`/cart/decrement/${itemId}`);
+      .post(`/cart/decrement/${product._id}`)
+      .send({ userId, quantity: 2 });
 
     expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('message');
   });
 
-  it('POST /remove/:itemId should remove item', async () => {
+  it('POST /remove/:itemId should remove item from cart', async () => {
+    await request(app)
+      .post('/addCart')
+      .send({ itemId: product._id, userId, quantity: 2 });
+
     const res = await request(app)
-      .post(`/remove/${itemId}`);
+      .post(`/remove/${product._id}`)
+      .send({ userId });
 
     expect(res.status).toBe(200);
 
-    const cartCheck = await request(app).get(`/cart/${user._id}`);
-    expect(cartCheck.body.length).toBe(0);
+    const cartRes = await request(app).get(`/cart/${userId}`);
+    expect(Array.isArray(cartRes.body)).toBe(true);
+    expect(cartRes.body.length).toBe(0);
   });
-
 });

@@ -1,73 +1,90 @@
+const express = require('express');
 const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const express = require('express');
 
-const OrderRoutes = require('../../Routers/OrderRoutes');
-const CartRoutes  = require('../../Routers/CartRoutes');
+const productModel = require('../../models/productModels');
+const userModel = require('../../models/UserModels');
 
-const Product = require('../../models/productModels');
-const User = require('../../models/UserModels');
+const cartRoutes = require('../../Routers/CartRoutes');
+const orderRoutes = require('../../Routers/OrderRoutes');
 
-let app, mongoServer, user, product;
+describe('Integration: Order flow', () => {
+  let app;
+  let mongo, userId, product;
 
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  await mongoose.connect(mongoServer.getUri(), { dbName: 'testDB' });
+  beforeAll(async () => {
+    mongo = await MongoMemoryServer.create();
+    const uri = mongo.getUri();
+    await mongoose.connect(uri);
 
-  app = express();
-  app.use(express.json());
-  app.use(CartRoutes);
-  app.use(OrderRoutes);
+    const user = await userModel.create({
+      name: 'Order User',
+      email: 'order@example.com',
+      password: 'hashed',
+      role: 'user',
+    });
+    userId = user._id;
 
-  user = await User.create({
-    name: 'Order User',
-    email: 'order@example.com',
-    password: '123456',
-    role: 'user'
+    product = await productModel.create({
+      name: 'Burger',
+      restaurantId: userId,
+      price: 50000,
+      category: 'Fastfood',
+      image: 'burger.jpg',
+      description: 'Burger test',
+      postedBy: userId,
+    });
+
+    app = express();
+    app.use(express.json());
+    app.use(cartRoutes);
+    app.use(orderRoutes);
   });
 
-  product = await Product.create({
-    name: 'Burger',
-    price: 12,
-    restaurantId: user._id,
-    postedBy: user._id
-  });
-});
-
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
-describe('Order Flow - Integration Test', () => {
-
-  it('Add to cart first', async () => {
-    const res = await request(app)
-      .post('/addCart')
-      .send({ itemId: product._id, userId: user._id, quantity: 2 });
-
-    expect(res.status).toBe(200);
+  afterAll(async () => {
+    await mongoose.connection.dropDatabase();
+    await mongoose.connection.close();
+    await mongo.stop();
   });
 
   it('POST /placeorder should create an order', async () => {
-    const res = await request(app)
-      .post('/placeorder')
-      .send({ userId: user._id });
+    const payload = {
+      userId,
+      products: [
+        {
+          productId: product._id,
+          quantity: 2,
+        },
+      ],
+      address: {
+        name: 'Test',
+        phoneNumber: '0123456789',
+        street: '123 Test',
+        city: 'HCM',
+        pincode: '700000',
+      },
+    };
 
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('orders');
+    const res = await request(app).post('/placeorder').send(payload);
+
+    expect(res.status).toBe(201); // placeOrder dùng 201
+    expect(res.body).toHaveProperty('_id');
+    expect(res.body).toHaveProperty('products');
   });
 
-  it('GET /Allorders should return list of orders', async () => {
+  it('GET /Allorders should return array of orders', async () => {
     const res = await request(app).get('/Allorders');
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('GET /getOrdersByUser/:userId should return user orders', async () => {
+    const res = await request(app).get(`/getOrdersByUser/${userId}`);
+
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
-
-  it('GET /getOrdersByUser/:id should return orders of that user', async () => {
-    const res = await request(app).get(`/getOrdersByUser/${user._id}`);
-    expect(res.status).toBe(200);
-  });
-
 });

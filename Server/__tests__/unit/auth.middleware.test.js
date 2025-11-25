@@ -1,67 +1,91 @@
 const httpMocks = require('node-mocks-http');
 const jwt = require('jsonwebtoken');
-const User = require('../../Models/User.model');
-const Auth = require('../../MiddleWare/Auth');
+const UserCollection = require('../../models/UserModels');
+const isAuthenticated = require('../../MiddleWare/Auth');
 
 jest.mock('jsonwebtoken');
-jest.mock('../../Models/User.model');
+jest.mock('../../models/UserModels');
 
-describe('Auth Middleware - Unit Test', () => {
-  
-  it('should return 401 if Authorization header is missing', async () => {
+describe('Auth middleware - unit', () => {
+  it('should return 401 when Authorization header is missing', async () => {
     const req = httpMocks.createRequest();
     const res = httpMocks.createResponse();
     const next = jest.fn();
 
-    await Auth(req, res, next);
+    await isAuthenticated(req, res, next);
+
     expect(res.statusCode).toBe(401);
-    expect(res._getJSONData()).toHaveProperty('message', 'No token provided');
+    // dùng _getData vì middleware dùng res.send(...)
+    expect(res._getData()).toEqual({ message: 'No token provided' });
+    expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 500 if jwt.verify throws error', async () => {
+  it('should return 401 when token has no sub', async () => {
     const req = httpMocks.createRequest({
-      headers: { authorization: 'Bearer invalidtoken' }
+      headers: { authorization: 'Bearer faketoken' },
     });
     const res = httpMocks.createResponse();
     const next = jest.fn();
 
-    jwt.verify.mockImplementation(() => { throw new Error('Invalid token'); });
+    jwt.verify.mockReturnValue({}); // không có sub
 
-    await Auth(req, res, next);
+    await isAuthenticated(req, res, next);
+
+    expect(res.statusCode).toBe(401);
+    expect(res._getData()).toEqual({ message: 'Invalid token' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return 401 when user not found', async () => {
+    const req = httpMocks.createRequest({
+      headers: { authorization: 'Bearer faketoken' },
+    });
+    const res = httpMocks.createResponse();
+    const next = jest.fn();
+
+    jwt.verify.mockReturnValue({ sub: { _id: '123' } });
+    UserCollection.findById.mockResolvedValue(null);
+
+    await isAuthenticated(req, res, next);
+
+    expect(res.statusCode).toBe(401);
+    expect(res._getData()).toEqual({ message: 'User not found' });
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it('should return 500 when jwt.verify throws', async () => {
+    const req = httpMocks.createRequest({
+      headers: { authorization: 'Bearer faketoken' },
+    });
+    const res = httpMocks.createResponse();
+    const next = jest.fn();
+
+    jwt.verify.mockImplementation(() => {
+      throw new Error('boom');
+    });
+
+    await isAuthenticated(req, res, next);
 
     expect(res.statusCode).toBe(500);
-    expect(res._getJSONData()).toHaveProperty('message');
+    expect(res._getData()).toEqual({ message: 'Internal server error' });
+    expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 401 if user decoded from token does not exist', async () => {
+  it('should call next() and set req.user when token & user valid', async () => {
     const req = httpMocks.createRequest({
-      headers: { authorization: 'Bearer validtoken' }
+      headers: { authorization: 'Bearer validtoken' },
     });
     const res = httpMocks.createResponse();
     const next = jest.fn();
 
-    jwt.verify.mockReturnValue({ id: '123' });
-    User.findById.mockResolvedValue(null);
+    const fakeUser = { _id: '123', name: 'Test' };
 
-    await Auth(req, res, next);
+    jwt.verify.mockReturnValue({ sub: { _id: '123' } });
+    UserCollection.findById.mockResolvedValue(fakeUser);
 
-    expect(res.statusCode).toBe(401);
-    expect(res._getJSONData()).toHaveProperty('message', 'User not found');
-  });
-
-  it('should call next() when token is valid and user exists', async () => {
-    const req = httpMocks.createRequest({
-      headers: { authorization: 'Bearer validtoken' }
-    });
-    const res = httpMocks.createResponse();
-    const next = jest.fn();
-
-    jwt.verify.mockReturnValue({ id: '123' });
-    User.findById.mockResolvedValue({ _id: '123', name: 'John Doe' });
-
-    await Auth(req, res, next);
+    await isAuthenticated(req, res, next);
 
     expect(next).toHaveBeenCalledTimes(1);
-    expect(req.user).toBeDefined();
+    expect(req.user).toEqual(fakeUser);
   });
 });
