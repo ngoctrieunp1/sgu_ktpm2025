@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const express = require('express');
 
-const OrderRoutes = require('../../Routes/Order.route');
-const CartRoutes = require('../../Routes/Cart.route');
+const OrderRoutes = require('../../Routers/OrderRoutes');
+const CartRoutes  = require('../../Routers/CartRoutes');
 
-const Product = require('../../Models/Product.model');
-const User = require('../../Models/User.model');
+const Product = require('../../models/productModels');
+const User = require('../../models/UserModels');
 
 let app, mongoServer, user, product;
 
