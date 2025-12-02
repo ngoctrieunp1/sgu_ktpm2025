@@ -179,7 +179,7 @@ jobs:
         with:
           # Nếu anh tạo secret tên DD_API_KEY thì dùng dòng dưới:
           api-key: ${{ secrets.DD_API_KEY }}
-          # Nếu anh không muốn tạo thêm mà xài luôn DD_APT_KEY thì thay bằng:
+          # Nếu anh không muốn tạo thêm mà xài luôn DD_APT_KEY thì thay bằn:
           # api-key: ${{ secrets.DD_APT_KEY }}
           site: datadoghq.com
 
