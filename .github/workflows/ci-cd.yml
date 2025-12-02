@@ -100,6 +100,56 @@
 
 
 
+# name: CI/CD 3-tier
+
+# on:
+#   # Bất kỳ push lên branch nào cũng chạy test
+#   push:
+
+#   # Khi tạo Pull Request vào main cũng chạy test lại
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   test_backend:
+#     name: Backend Unit & Integration Tests
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: '18'
+
+#       - name: Show Node/NPM version
+#         working-directory: Server
+#         run: |
+#           node -v
+#           npm -v
+
+#       - name: Install dependencies
+#         working-directory: Server
+#         run: |
+#           npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+
+#       - name: Run Unit Tests
+#         working-directory: Server
+#         env:
+#           NODE_ENV: test
+#           CI: true
+#         run: npm test
+
+#       - name: Run Integration Tests (in-memory MongoDB)
+#         working-directory: Server
+#         env:
+#           NODE_ENV: test
+#           CI: true
+#         run: npm run test:integration
+
+
+
 name: CI/CD 3-tier
 
 on:
@@ -123,6 +173,16 @@ jobs:
         with:
           node-version: '18'
 
+      # 🔹 Datadog CI Visibility (bước mới thêm)
+      - name: Set up Datadog CI Visibility
+        uses: DataDog/ci-visibility-github-actions@v3
+        with:
+          # Nếu anh tạo secret tên DD_API_KEY thì dùng dòng dưới:
+          api-key: ${{ secrets.DD_API_KEY }}
+          # Nếu anh không muốn tạo thêm mà xài luôn DD_APT_KEY thì thay bằng:
+          # api-key: ${{ secrets.DD_APT_KEY }}
+          site: datadoghq.com
+
       - name: Show Node/NPM version
         working-directory: Server
         run: |
@@ -139,6 +199,9 @@ jobs:
         env:
           NODE_ENV: test
           CI: true
+          DD_ENV: ci
+          DD_SERVICE: backend-tests
+          DD_SITE: datadoghq.com
         run: npm test
 
       - name: Run Integration Tests (in-memory MongoDB)
@@ -146,4 +209,7 @@ jobs:
         env:
           NODE_ENV: test
           CI: true
+          DD_ENV: ci
+          DD_SERVICE: backend-tests
+          DD_SITE: datadoghq.com
         run: npm run test:integration
