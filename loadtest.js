@@ -29,7 +29,7 @@ async function hitApi(index) {
 (async () => {
   console.log("🔰 BẮT ĐẦU LOAD TEST 50 REQUEST THẬT...\n");
 
-  const total = 50;
+  const total = 20;
 
   for (let i = 1; i <= total; i++) {
     await hitApi(i);
