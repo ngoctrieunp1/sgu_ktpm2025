@@ -42,6 +42,13 @@ const handleblock = (userId) => {
     toast.success(' User has been blocked Successfully!')
   }).catch((err) => {
     console.log(err);
+
+    // const message =
+    //   err?.response?.data?.message ||
+    //   'Không thể ẩn tài khoản. Vui lòng thử lại.';
+
+    // toast.error(message);
+
   });
 };
 
