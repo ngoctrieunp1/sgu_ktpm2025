@@ -2,7 +2,7 @@ const jwt= require("jsonwebtoken")
 const bcrypt=require("bcrypt")
 const mongoose=require('mongoose')
 const UserCollection=require("../models/UserModels")
-
+const OrderCollection = require("../models/OrderModel");
 // signup
 const register=async (req,res)=>{
   try{
@@ -126,18 +126,70 @@ const profileUpdate=async(req,res)=>{
 
 // Admin can block both user and restaurent 
 
+// const blockuser = async (req, res) => {
+//  try{
+//   const {id}=req.params;
+//   const user=await UserCollection.findByIdAndUpdate(id,{blocked:true},{new:true});
+//   if(!user){
+//   return res.status(404).send({message:"user not found"})
+//   }
+//   return res.status(200).send({user})
+//  } catch (error) {
+//   res.status(500).json({ message: 'Server error' });
+// }
+// }
+
 const blockuser = async (req, res) => {
- try{
-  const {id}=req.params;
-  const user=await UserCollection.findByIdAndUpdate(id,{blocked:true},{new:true});
-  if(!user){
-  return res.status(404).send({message:"user not found"})
+  try {
+    const { id } = req.params;
+
+    // Lấy tất cả đơn hàng của user hoặc restaurant
+    const orders = await OrderCollection.find({
+      $or: [
+        { userId: id },                        // user
+        { "products.restaurantId": id }        // restaurant
+      ]
+    });
+
+    // Trường hợp không có đơn nào => được phép block
+    if (orders.length === 0) {
+      const user = await UserCollection.findByIdAndUpdate(
+        id,
+        { blocked: true },
+        { new: true }
+      );
+      return res.status(200).send({ user, message: "Blocked successfully" });
+    }
+
+    // Kiểm tra xem tất cả đơn đã giao chưa
+    const allDelivered = orders.every(
+      (order) => order.status === "Your order has been delivered successfully"
+    );
+
+    if (!allDelivered) {
+      return res.status(400).send({
+        message:
+          "Không thể ẩn tài khoản vì vẫn còn đơn hàng chưa hoàn tất giao."
+      });
+    }
+
+    // Cho phép block khi tất cả đơn đều đã giao
+    const user = await UserCollection.findByIdAndUpdate(
+      id,
+      { blocked: true },
+      { new: true }
+    );
+
+    return res.status(200).send({
+      user,
+      message: "Blocked successfully (all orders delivered)"
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
   }
-  return res.status(200).send({user})
- } catch (error) {
-  res.status(500).json({ message: 'Server error' });
-}
-}
+};
 
 // Admin can unblock both user and restaurent 
 const unblockUser = async (req, res) => {
