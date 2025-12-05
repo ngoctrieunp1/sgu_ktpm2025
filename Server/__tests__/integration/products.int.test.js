@@ -73,11 +73,11 @@ describe('Integration: Products public endpoints', () => {
     expect(res.body).toHaveProperty('_id', productA._id.toString());
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cái này là test đúng
-    expect(res.body).toHaveProperty('name', 'Pho Bo');
+    // expect(res.body).toHaveProperty('name', 'Pho Bo');
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // cái này là test sai
-    // expect(res.body).toHaveProperty('name', 'Pho Ga');
-// Lý do: API thật trả về "Pho Bo", nhưng test lại đòi "Pho Ga" → Jest sẽ báo fail test này.
+    expect(res.body).toHaveProperty('name', 'Pho Ga');
+// Lý do: API thật trả về "Pho Bo", nhưng test lại đòi "Pho Ga" → Jest sẽ báo fail test này..
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   });
