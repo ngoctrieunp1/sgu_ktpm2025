@@ -1,2 +1,6 @@
 #.env
 node_modules
+coverage/
+genai/test-report.json
+__tests__/genai-unit/
+__tests__/genai-integration/
