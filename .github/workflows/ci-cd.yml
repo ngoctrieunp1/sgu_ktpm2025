@@ -100,7 +100,7 @@
 
 
 
-name: CI/CD 3-tier
+name: CI
 
 on:
   # Bất kỳ push lên branch nào cũng chạy test
