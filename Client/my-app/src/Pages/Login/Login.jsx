@@ -142,7 +142,16 @@ function Login() {
 
         <form onSubmit={handleSubmit} onChange={updateForm}>
           <div className="login-input">
+            {/* <input
+              type="email"
+              placeholder="Email"
+              required
+              name="email"
+              value={login.email}
+              onChange={updateForm}
+            /> */}
             <input
+              data-testid="login-email"
               type="email"
               placeholder="Email"
               required
@@ -150,7 +159,17 @@ function Login() {
               value={login.email}
               onChange={updateForm}
             />
+
+            {/* <input
+              type="password"
+              placeholder="Password"
+              required
+              name="password"
+              value={login.password}
+              onChange={updateForm}
+            /> */}
             <input
+              data-testid="login-password"
               type="password"
               placeholder="Password"
               required
@@ -158,11 +177,20 @@ function Login() {
               value={login.password}
               onChange={updateForm}
             />
+
           </div>
           <div className="login-footer">
-            <button className="login-button" type="submit">
+            {/* <button className="login-button" type="submit">
+              Sign In
+            </button> */}
+            <button
+              data-testid="btn-login"
+              className="login-button"
+              type="submit"
+            >
               Sign In
             </button>
+
             <p>
               Don&apos;t have an account?{' '}
               <Link to="/sign-up" style={{ textDecoration: 'none' }}>
