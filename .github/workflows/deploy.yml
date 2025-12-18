@@ -137,7 +137,7 @@ name: CD
 on:
   # Tự động chạy sau khi workflow "CI/CD 3-tier" kết thúc
   workflow_run:
-    workflows: ["CI"]   # phải khớp 100% với tên trong ci-cd.yml
+    workflows: ["Selenium"]   # phải khớp 100% với tên trong ci-cd.yml
     types: [completed]
 
   # Cho phép chạy thủ công

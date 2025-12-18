@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.13.2",
-    "puppeteer": "^24.31.0"
+    "puppeteer": "^24.31.0",
+    "selenium-webdriver": "^4.33.0"
   }
 }

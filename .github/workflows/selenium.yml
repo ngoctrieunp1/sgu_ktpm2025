@@ -1,0 +1,48 @@
+name: Selenium
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  e2e:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start docker
+        run: docker compose up -d --build
+
+      - name: Wait frontend
+        run: |
+          for i in {1..60}; do
+            if curl -sSf http://localhost:3000/home > /dev/null; then
+              echo "Frontend up"; exit 0
+            fi
+            sleep 2
+          done
+          echo "Frontend not ready"
+          docker compose logs
+          exit 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Cài selenium-webdriver dù repo chưa có
+      - name: Install selenium deps
+        run: |
+          npm ci || npm install
+          npm i -D selenium-webdriver
+
+      - name: Run selenium
+        env:
+          BASE_URL: http://localhost:3000
+        run: node selenium/e2e-place-order.js
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs
