@@ -91,10 +91,8 @@ services:
     environment:
       NODE_ENV: development
       PORT: "4000"
-
-      # 🔒 ÉP CỨNG – KHÔNG BAO GIỜ DÙNG host.docker.internal
-      MONGO_URL: "mongodb://mongo_db:27017/foodapp"
-
+      # Backend trong docker => gọi mongo bằng service name
+      MONGODB_URI: "mongodb://mongo_db:27017/foodapp"
       JWT_SECRET: "changeme_dev_secret"
       STRIPE_SECRET: ""
     ports:
@@ -111,6 +109,12 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       CHOKIDAR_USEPOLLING: "true"
+
+      # ✅ QUAN TRỌNG:
+      # Selenium chạy trên HOST, mở http://localhost:3000
+      # => React gọi API phải dùng localhost:4000
+      REACT_APP_API_URL: "http://localhost:4000"
+
     ports:
       - "3000:3000"
     stdin_open: true
