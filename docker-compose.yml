@@ -1,18 +1,83 @@
+# services:
+#   mongo_db:
+#     image: mongo:7
+#     container_name: mongo_db
+#     ports:
+#       - "27017:27017"              # mở ra để bạn dùng mongosh từ host
+#     volumes:
+#       - mongo_data:/data/db
+#     environment:
+#       MONGO_INITDB_DATABASE: foodapp
+#     healthcheck:
+#       test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 })' >/dev/null 2>&1 || exit 1"]
+#       interval: 30s
+#       timeout: 5s
+#       retries: 5
+#     restart: unless-stopped
+
+#   backend_server:
+#     build:
+#       context: ./Server
+#       dockerfile: Dockerfile
+#     container_name: backend_server
+#     depends_on:
+#       mongo_db:
+#         condition: service_healthy
+#     environment:
+#       NODE_ENV: development
+#       PORT: "4000"
+#       # CHÚ Ý: tên service 'mongo_db' thay cho localhost
+#       MONGODB_URI: "mongodb://host.docker.internal:27017/foodapp"
+#       JWT_SECRET: "changeme_dev_secret"
+#       STRIPE_SECRET: ""
+#     ports:
+#       - "4000:4000"
+#     restart: unless-stopped
+
+#   frontend_client:
+#     build:
+#       context: ./Client/my-app
+#     container_name: frontend_client
+#     depends_on:
+#       - backend_server
+#     environment:
+#       HOST: "0.0.0.0"
+#       PORT: "3000"
+#       CHOKIDAR_USEPOLLING: "true"
+#       # Tuỳ code của bạn có dùng hay không; trình duyệt trên host vẫn gọi http://localhost:4000
+#       REACT_APP_API_URL: "http://localhost:4000"
+#     ports:
+#       - "3000:3000"
+#     stdin_open: true
+#     tty: true
+#     restart: unless-stopped
+
+# volumes:
+#   mongo_data:
+
+
+
+
+
+
+
+
+
 services:
   mongo_db:
     image: mongo:7
     container_name: mongo_db
     ports:
-      - "27017:27017"              # mở ra để bạn dùng mongosh từ host
+      - "27017:27017"
     volumes:
       - mongo_data:/data/db
     environment:
       MONGO_INITDB_DATABASE: foodapp
     healthcheck:
       test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 })' >/dev/null 2>&1 || exit 1"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     restart: unless-stopped
 
   backend_server:
@@ -26,8 +91,10 @@ services:
     environment:
       NODE_ENV: development
       PORT: "4000"
-      # CHÚ Ý: tên service 'mongo_db' thay cho localhost
-      MONGODB_URI: "mongodb://host.docker.internal:27017/foodapp"
+
+      # 🔒 ÉP CỨNG – KHÔNG BAO GIỜ DÙNG host.docker.internal
+      MONGO_URL: "mongodb://mongo_db:27017/foodapp"
+
       JWT_SECRET: "changeme_dev_secret"
       STRIPE_SECRET: ""
     ports:
@@ -44,8 +111,6 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       CHOKIDAR_USEPOLLING: "true"
-      # Tuỳ code của bạn có dùng hay không; trình duyệt trên host vẫn gọi http://localhost:4000
-      REACT_APP_API_URL: "http://localhost:4000"
     ports:
       - "3000:3000"
     stdin_open: true
@@ -54,71 +119,3 @@ services:
 
 volumes:
   mongo_data:
-
-
-
-
-
-
-
-
-
-# version: "3.9"
-# services:
-#   mongo_db:
-#     image: mongo:7
-#     container_name: mongo_db
-#     ports:
-#       - "27017:27017"
-#     volumes:
-#       - mongo_data:/data/db
-#     environment:
-#       MONGO_INITDB_DATABASE: foodapp
-#     healthcheck:
-#       test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 })' >/dev/null 2>&1 || exit 1"]
-#       interval: 30s
-#       timeout: 5s
-#       retries: 5
-#     restart: unless-stopped
-
-#   backend_server:
-#     build:
-#       context: ./Server
-#       dockerfile: dockerfile   # hoặc 'dockerfile' nếu bạn không đổi tên file
-#     container_name: backend_server
-#     depends_on:
-#       mongo_db:
-#         condition: service_healthy
-#     environment:
-#       NODE_ENV: "production"
-#       PORT: "4000"
-#       # DÙNG TÊN SERVICE nội bộ thay vì host.docker.internal
-#       MONGO_URI: "mongodb://mongo_db:27017/foodapp"  # <-- dùng đúng biến mà app đọc
-#       JWT_SECRET: "changeme_dev_secret"
-#       STRIPE_SECRET: ""
-#     ports:
-#       - "4000:4000"
-#     healthcheck:
-#       test: ["CMD-SHELL", "curl -fsS http://localhost:4000/health || exit 1"]
-#       interval: 30s
-#       timeout: 5s
-#       retries: 5
-#     restart: unless-stopped
-
-#   frontend_client:
-#     build:
-#       context: ./Client/my-app
-#       dockerfile: dockerfile   # hoặc 'dockerfile' nếu không đổi tên
-#     container_name: frontend_client
-#     depends_on:
-#       - backend_server
-#     environment:
-#       NODE_ENV: "production"
-#       # nếu frontend cần URL API lúc build, có thể dùng:
-#       # REACT_APP_API_URL: "http://localhost:4000"
-#     ports:
-#       - "3000:80"   # Nginx lắng ở 80, ngoài vẫn truy cập http://localhost:3000
-#     restart: unless-stopped
-
-# volumes:
-#   mongo_data:
