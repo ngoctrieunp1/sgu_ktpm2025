@@ -129,9 +129,10 @@ services:
       MONGO_INITDB_DATABASE: foodapp
     healthcheck:
       test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 })' >/dev/null 2>&1 || exit 1"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
     restart: unless-stopped
 
   backend_server:
@@ -145,7 +146,14 @@ services:
     environment:
       NODE_ENV: development
       PORT: "4000"
+
+      # ✅ ÉP DB.js ĂN THEO BIẾN NÀY (ưu tiên cao nhất trong code của anh)
+      MONGO_URL: "mongodb://mongo_db:27017/foodapp"
+
+      # (tuỳ) giữ lại để tương thích chỗ khác, nhưng không bắt buộc
       MONGODB_URI: "mongodb://mongo_db:27017/foodapp"
+      MONGODB_URL: "mongodb://mongo_db:27017/foodapp"
+
       JWT_SECRET: "changeme_dev_secret"
       STRIPE_SECRET: ""
     ports:
@@ -162,6 +170,9 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       CHOKIDAR_USEPOLLING: "true"
+      # ✅ ĐỪNG set REACT_APP_API_URL = backend_server (browser selenium không resolve được)
+      # Nếu code anh có bắt buộc dùng biến này thì dùng localhost:
+      # REACT_APP_API_URL: "http://localhost:4000"
     ports:
       - "3000:3000"
     stdin_open: true
