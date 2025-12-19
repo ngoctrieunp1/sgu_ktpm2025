@@ -1,3 +1,65 @@
+# name: Selenium
+
+# on:
+#   workflow_run:
+#     workflows: ["CI"]
+#     types: [completed]
+
+# jobs:
+#   e2e:
+#     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v4
+
+#       - name: Start docker
+#         run: docker compose up -d --build
+
+#       - name: Wait backend
+#         run: |
+#           for i in {1..60}; do
+#             if curl -sSf http://localhost:4000/health > /dev/null; then
+#               echo "Backend up"; break
+#             fi
+#             sleep 2
+#           done
+
+#       - name: Wait frontend
+#         run: |
+#           for i in {1..60}; do
+#             # Ép Accept: text/html để CRA không proxy / sang backend
+#             if curl -sSf -H "Accept: text/html" http://localhost:3000/ > /dev/null; then
+#               echo "Frontend up"; exit 0
+#             fi
+#             sleep 2
+#           done
+#           echo "Frontend not ready"
+#           docker compose ps
+#           docker compose logs --no-color --tail=200
+#           exit 1
+
+#       - uses: actions/setup-node@v4
+#         with:
+#           node-version: '18'
+
+#       - name: Install selenium deps
+#         run: |
+#           npm ci || npm install
+#           npm i -D selenium-webdriver
+
+#       - name: Run selenium
+#         env:
+#           BASE_URL: http://localhost:3000
+#         run: node selenium/e2e-place-order.js
+
+#       - name: Logs on failure
+#         if: failure()
+#         run: |
+#           docker compose ps
+#           docker compose logs --no-color --tail=300
+
+
 name: Selenium
 
 on:
@@ -19,16 +81,21 @@ jobs:
       - name: Wait backend
         run: |
           for i in {1..60}; do
-            if curl -sSf http://localhost:4000/health > /dev/null; then
-              echo "Backend up"; break
+            # dùng "/" cho chắc vì dự án của anh đang có GET / 200
+            if curl -sSf http://localhost:4000/ > /dev/null; then
+              echo "Backend up"; exit 0
             fi
             sleep 2
           done
+          echo "Backend not ready"
+          docker compose ps
+          docker compose logs --no-color --tail=200 backend_server
+          exit 1
 
       - name: Wait frontend
         run: |
           for i in {1..60}; do
-            # Ép Accept: text/html để CRA không proxy / sang backend
+            # Ép Accept: text/html để CRA không proxy request sang backend
             if curl -sSf -H "Accept: text/html" http://localhost:3000/ > /dev/null; then
               echo "Frontend up"; exit 0
             fi
@@ -36,12 +103,12 @@ jobs:
           done
           echo "Frontend not ready"
           docker compose ps
-          docker compose logs --no-color --tail=200
+          docker compose logs --no-color --tail=200 frontend_client
           exit 1
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install selenium deps
         run: |
