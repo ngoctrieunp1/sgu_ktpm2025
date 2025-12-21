@@ -42,7 +42,7 @@ const uri =
   process.env.MONGO_URL ||                // Render / Atlas
   process.env.MONGODB_URI ||              // fallback 1
   process.env.MONGODB_URL ||              // fallback 2
-  "mongodb://mongo_db:27017/foodapp";    // local / Docker
+  "mongodb://127.0.0.1:27017/foodapp";    // local / Docker
 
 // ----------------------------
 //  SỰ KIỆN KẾT NỐI (giữ nguyên logic cũ)

@@ -1,14 +1,11 @@
-# Node
 node_modules
-npm-debug.log
-yarn-error.log
 
-# ENV (RẤT QUAN TRỌNG)
-.env
-.env.*
 
-# Git / build
-.git
-coverage
-build
-dist
+
+
+# node_modules
+# .git
+# coverage
+# build
+# dist
+# *.log
