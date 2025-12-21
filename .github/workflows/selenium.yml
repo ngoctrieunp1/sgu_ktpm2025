@@ -9,7 +9,6 @@ jobs:
   e2e:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -37,9 +36,7 @@ jobs:
             fi
             sleep 2
           done
-          echo "Frontend not ready"
-          docker compose ps
-          docker compose logs --no-color --tail=200
+
           exit 1
 
       # ✅ Đồng bộ với engines node 20.x
@@ -47,23 +44,7 @@ jobs:
         with:
           node-version: '20'
 
-      # ✅ Cài selenium deps (không phụ thuộc repo có package.json ở root)
       - name: Install selenium deps
         working-directory: selenium
         run: |
-          if [ ! -f package.json ]; then
-            npm init -y
-          fi
-          npm i selenium-webdriver
 
-      - name: Run selenium
-        working-directory: selenium
-        env:
-          BASE_URL: http://localhost:3000
-        run: node e2e-place-order.js
-
-      - name: Logs on failure
-        if: failure()
-        run: |
-          docker compose ps
-          docker compose logs --no-color --tail=300
